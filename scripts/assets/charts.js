@@ -68,6 +68,13 @@
     if (o.labelWidth) wrap.style.setProperty('--sc-lw', o.labelWidth);
     const tips = new Map();
     for (const it of items) {
+      if (it.type === 'note') {
+        const n = document.createElement('div');
+        n.className = 'sc-hb-note';
+        n.textContent = it.text;
+        wrap.append(n);
+        continue;
+      }
       if (it.type === 'header') {
         const h = document.createElement('div');
         h.className = 'sc-hb-head';
@@ -118,12 +125,12 @@
     const stacks = o.rows.map((r) => { let y0 = 0; return o.series.map((s) => { const v = +r[s.key] || 0; const seg = { r, s, y0, y1: y0 + v, v }; y0 += v; return seg; }); });
     const maxY = d3.max(stacks, (st) => st[st.length - 1].y1) || 1;
     const y0 = d3.scaleLinear().domain([0, maxY * 1.12]).nice();
-    const ticks = y0.ticks(4);
+    const ticks = y0.ticks(4).filter(Number.isInteger);
     const probe = svg.append('text').attr('class', 'sc-tick');
     let lw = 0;
     ticks.forEach((t) => { probe.text(d3.format(',')(t)); lw = Math.max(lw, probe.node().getComputedTextLength()); });
     probe.remove();
-    const m = { l: Math.ceil(lw) + 10, r: 6, t: o.band ? 20 : 8, b: 24 };
+    const m = { l: o.noYAxis ? 4 : Math.ceil(lw) + 10, r: 6, t: (o.band ? 20 : 8) + (o.ann ? 16 : 0), b: 24 };
     const y = y0.range([H - m.b, m.t]);
     const x = d3.scaleBand().domain(o.rows.map((_, i) => i)).range([m.l, W - m.r]).paddingInner(0.25).paddingOuter(0.1);
     if (o.band) {
@@ -135,9 +142,9 @@
         svg.append('text').attr('class', 'sc-band-label').attr('x', bx0 + 4).attr('y', m.t - 4).text(o.band.label);
       }
     }
-    svg.append('g').selectAll('line').data(ticks).join('line').attr('class', 'sc-gridline')
+    if (!o.noYAxis) svg.append('g').selectAll('line').data(ticks).join('line').attr('class', 'sc-gridline')
       .attr('x1', m.l).attr('x2', W - m.r).attr('y1', (t) => y(t)).attr('y2', (t) => y(t));
-    svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'sc-tick')
+    if (!o.noYAxis) svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'sc-tick')
       .attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => d3.format(',')(t));
     const g = svg.append('g');
     stacks.forEach((st, i) => {
@@ -156,6 +163,18 @@
       }
     });
     svg.append('line').attr('class', 'sc-axis').attr('x1', m.l).attr('x2', W - m.r).attr('y1', H - m.b).attr('y2', H - m.b);
+    // 注記（例：配信日・開幕日）。o.ann = [{test(r), text}]
+    (o.ann || []).forEach((a) => {
+      const i = o.rows.findIndex(a.test);
+      if (i < 0) return;
+      const cx = x(i) + x.bandwidth() / 2;
+      const top = y(stacks[i][stacks[i].length - 1].y1) - 16;
+      svg.append('line').attr('class', 'sc-ann-line').attr('x1', cx).attr('x2', cx).attr('y1', 15).attr('y2', Math.max(18, top));
+      const t = svg.append('text').attr('class', 'sc-ann').attr('x', cx).attr('y', 11).attr('text-anchor', 'middle').text(a.text);
+      const w = t.node().getComputedTextLength();
+      if (cx - w / 2 < m.l) t.attr('text-anchor', 'start').attr('x', Math.max(m.l, cx - 6));
+      else if (cx + w / 2 > W) t.attr('text-anchor', 'end').attr('x', Math.min(W, cx + 6));
+    });
     const every = o.every || (x.step() < 30 ? Math.ceil(30 / x.step()) : 1);
     o.rows.forEach((r, i) => {
       if (i % every) return;

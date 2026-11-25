@@ -23,7 +23,7 @@
     p.textContent = `作成 ${manifest.generated_at}／元データ：${manifest.input}／イベント ${manifest.event}／集計期間 ${manifest.period}`;
   });
   dash.draw('footer', (p) => {
-    p.textContent = `作成 ${manifest.generated_at}（元データ：${manifest.input}）。集計：scripts/drop_aggregate.py`;
+    p.textContent = `品川国際映画祭2026 × みんまちDROP 流入・利用レポート｜作成 ${manifest.generated_at}｜元データ：${manifest.input}｜集計：scripts/drop_aggregate.py`;
   });
   dash.draw('inputs-body', (tb) => {
     tb.replaceChildren();
@@ -62,21 +62,6 @@
     }
   });
 
-  // 目次
-  function setupToc() {
-    const go = (id, smooth) => {
-      const t = document.getElementById(id);
-      if (!t) return;
-      if (t.tagName === 'DETAILS') t.open = true;
-      t.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
-    };
-    document.querySelectorAll('.sc-toc a[data-target]').forEach((a) => {
-      a.addEventListener('click', (ev) => { ev.preventDefault(); go(a.dataset.target, true); dash.setLink(a.dataset.target); });
-    });
-    const h = decodeURIComponent((location.hash || '').slice(1));
-    if (h) setTimeout(() => go(h, false), 200);
-  }
-
   function show(payload) {
     window.DASH_DATA = payload.datasets;
     const app = $('app');
@@ -84,7 +69,7 @@
     $('login').hidden = true;
     app.hidden = false;
     window.__runDraws();
-    setupToc();
+    window.__setupPage();   // 目次・「運営の投稿を含める」の切り替え（page.js）
     let w = window.innerWidth, t;
     window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (window.innerWidth !== w) { w = window.innerWidth; window.__runDraws(); } }, 150); });
     window.addEventListener('beforeprint', window.__runDraws);

@@ -1,6 +1,7 @@
 # 品川国際映画祭2026 × みんまちDROP：ダッシュボード用の集計
-# build(src_dir) が、図の元になる集計表（dict: 表名 -> rows）と、その元テーブル名を返す。
-# 直接実行した場合は従来どおり out/data/*.json に書き出す：python drop_aggregate.py <jsonフォルダ> <出力フォルダ>
+# build(src_dir, extra_sites) が、図の元になる集計表（dict: 表名 -> rows）と、その元テーブル名を返す。
+#   extra_sites：参照元ドメイン → 表示名の追加分（公開したくない社内サイトなど。raw/site_names.json から渡す）
+# 直接実行した場合は out/data/*.json に書き出す：python drop_aggregate.py <jsonフォルダ> <出力フォルダ>
 import json, os, re, sys
 from collections import Counter
 import pandas as pd
@@ -9,7 +10,7 @@ EVENT = "shinagawa-cinema-2026"
 START, END = "2026-11-02", "2026-11-14"       # 集計期間（DROP公開＝スタンプ期間 11/2〜11/14）
 EVENT_START = "2026-11-09"                    # 映画祭の開催開始日（11/9〜11/14）
 
-def build(SRC):
+def build(SRC, extra_sites=None):
     RESULTS, INPUTS = {}, {}
 
     def load(name):
@@ -101,8 +102,11 @@ def build(SRC):
         "search.yahoo.co.jp": "Yahoo!検索", "www.bing.com": "Bing検索",
         "l.instagram.com": "Instagram", "instagram.com": "Instagram",
         "drop.machiapps.com": "みんまちDROP本体サイト",
-        "www.fc.obayashi.co.jp": "大林組 社内サイト",
     }
+    # 公開したくないドメイン（社内サイトなど）は raw/site_names.json に書く（GitHub には上がらない）。表示は名前だけにしてドメインは出さない
+    HIDDEN = dict(extra_sites or {})
+    SITE.update(HIDDEN)
+    show_domain = lambda d: HIDDEN.get(d, d)
     def ref_domain(u):
         m = re.match(r"https?://([^/?#]+)", u) if isinstance(u, str) else None
         return m.group(1) if m else None
@@ -119,7 +123,7 @@ def build(SRC):
 
     uniq = lambda s: "・".join(sorted(set(s)))
     def site_mix(x):
-        vc = x.map(lambda d: d if pd.notna(d) else "参照元なし").value_counts()
+        vc = x.map(lambda d: show_domain(d) if pd.notna(d) else "参照元なし").value_counts()
         return "・".join(f"{k} {v}" for k, v in vc.items())
     g = ga.groupby(["group", "channel"]).agg(
         utm=("utm", uniq), note=("note", uniq), sites=("ref_domain", site_mix),
@@ -137,8 +141,16 @@ def build(SRC):
     g = g.sort_values(["group_order", "users"], ascending=[True, False]).reset_index(drop=True)
     g["rank"] = range(1, len(g) + 1)
     g["is_cinema"] = g["group"].str.startswith("映画祭")
+    # 告知の種類：配信（その日に届く）／常設のリンク（いつでも見られる）／会場の QR／識別タグなし・他イベント
+    KIND = {"intranet": "push", "line_app": "push", "reactivation": "push",
+            "official_web": "link", "machiapps": "link",
+            "poster": "onsite", "flyer": "onsite", "screen": "onsite"}
+    KIND_LABEL = {"push": "配信（その日に届く）", "link": "常設のリンク", "onsite": "会場の QR", "untagged": "識別タグなし・他イベント"}
+    g["kind"] = g.apply(lambda r: KIND.get(r["utm"], "untagged") if r["is_cinema"] else "untagged", axis=1)
+    g["kind_label"] = g["kind"].map(KIND_LABEL)
+    g["kind_order"] = g["kind"].map(["push", "link", "onsite", "untagged"].index)
     ga_channel = g[["rank", "group", "channel", "utm", "note", "users", "share_pct", "pre", "during",
-                    "pre_daily", "during_daily", "mobile", "mobile_pct", "pc_pct", "is_cinema", "sites"]]
+                    "pre_daily", "during_daily", "mobile", "mobile_pct", "pc_pct", "is_cinema", "sites", "kind", "kind_label", "kind_order"]]
     save("ga_channel", ga_channel, ["mart_ga.json"])
 
     gg = ga.groupby("group")["user_pseudo_id"].nunique().reindex(GROUP_ORDER).fillna(0).astype(int).reset_index()
@@ -152,21 +164,27 @@ def build(SRC):
                                 cinema=("seg", lambda v: int((v == "cinema").sum())),
                                 no_utm=("seg", lambda v: int((v == "no_utm").sum())),
                                 other=("seg", lambda v: int((v == "other").sum())),
-                                domains=("ref_domain", lambda v: "・".join(sorted(set(d for d in v if pd.notna(d))))),
-                                channels=("channel", lambda v: "・".join(f"{k} {n}" for k, n in v.value_counts().items()))).reset_index()
+                                domains=("ref_domain", lambda v: "・".join(sorted(set(d for d in v if pd.notna(d) and d not in HIDDEN)))),
+                                channels=("channel", lambda v: "・".join(f"{k} {n}" for k, n in v.value_counts().items())),
+                                land_event=("landing", lambda v: int(v.isin(["TOPページ", "映画祭のスポット・案内ページ"]).sum())),
+                                land_other=("landing", lambda v: int(v.str.startswith("他イベント").sum())),
+                                land_misc=("landing", lambda v: int(v.str.startswith("その他").sum()))).reset_index()
     sg["has_ref"] = ~sg["site"].str.startswith("参照元なし")
     sg["share_pct"] = (sg["users"] / total_users * 100).round(1)
     sg = sg.sort_values(["has_ref", "users"], ascending=[False, False]).reset_index(drop=True)
     sg["rank"] = range(1, len(sg) + 1)
-    save("ga_site", sg[["rank", "site", "domains", "users", "share_pct", "cinema", "no_utm", "other", "has_ref", "channels"]], ["mart_ga.json"])
+    save("ga_site", sg[["rank", "site", "domains", "users", "share_pct", "cinema", "no_utm", "other", "land_event", "land_other", "land_misc", "has_ref", "channels"]], ["mart_ga.json"])
 
     # 日別（映画祭の告知経由／それ以外）と、日別×チャネル
     ga["is_cinema"] = ga["group"].str.startswith("映画祭")
+    ga["kind"] = ga.apply(lambda r: KIND.get(r["utm"], "untagged") if r["is_cinema"] else "untagged", axis=1)
     dd = []
     for d in days:
         x = ga[ga["event_date_jp"] == d]
         dd.append({"date": d, "period": period(d), "ga_missing": d in GA_MISSING,
-                   "cinema": int(x["is_cinema"].sum()), "other": int((~x["is_cinema"]).sum()), "total": len(x)})
+                   "cinema": int(x["is_cinema"].sum()), "other": int((~x["is_cinema"]).sum()), "total": len(x),
+                   "push": int((x["kind"] == "push").sum()), "link": int((x["kind"] == "link").sum()),
+                   "onsite": int((x["kind"] == "onsite").sum()), "untagged": int((x["kind"] == "untagged").sum())})
     save("ga_daily", pd.DataFrame(dd), ["mart_ga.json"])
 
     dc = []
@@ -183,6 +201,26 @@ def build(SRC):
     lp.columns = ["landing", "cinema_online", "cinema_onsite", "no_utm", "other_event", "unknown", "users"]
     lp["share_pct"] = (lp["users"] / total_users * 100).round(1)
     save("ga_landing", lp, ["mart_ga.json"])
+
+    # 流れ図：リンク元 → 流入経路 → 最初に開いたページ（人数）
+    REF_NODE = {"品川国際映画祭 公式サイト": "映画祭の公式サイト", "Google検索": "検索（Google・Yahoo!・Bing）",
+                "Yahoo!検索": "検索（Google・Yahoo!・Bing）", "Bing検索": "検索（Google・Yahoo!・Bing）",
+                "LINE（Lステップ・LINEアプリ内）": "LINE", "Instagram": "Instagram"}
+    NO_REF = "リンク元が残らない（QR・メール・社内イントラなど）"
+    REF_ORDER = ["映画祭の公式サイト", NO_REF, "LINE", "検索（Google・Yahoo!・Bing）", "Instagram", "その他のサイト"]
+    ga["ref_node"] = ga.apply(lambda r: NO_REF if pd.isna(r["ref_domain"]) else REF_NODE.get(r["site"], "その他のサイト"), axis=1)
+    ga["flow_channel"] = ga["channel"].where(ga["group"] != "他イベント由来", "他イベント由来")
+    CH_ORDER = [c for c in ga_channel["channel"] if not c.startswith("他イベント")]
+    CH_ORDER.insert(CH_ORDER.index("UTM値が判読できない"), "他イベント由来")
+    LANDING_ORDER = ["TOPページ", "映画祭のスポット・案内ページ", "他イベントのページ（富山・大阪など）", "その他（投稿・登録・一覧など）"]
+    fl = ga.groupby(["ref_node", "flow_channel", "group", "landing"])["user_pseudo_id"].nunique().rename("users").reset_index()
+    fl.columns = ["ref", "channel", "group", "landing", "users"]
+    fl["ref_order"] = fl["ref"].map(REF_ORDER.index)
+    fl["channel_order"] = fl["channel"].map(CH_ORDER.index)
+    fl["landing_order"] = fl["landing"].map(LANDING_ORDER.index)
+    fl["ref_sites"] = fl.apply(lambda r: "・".join(f"{k} {v}" for k, v in ga[(ga["ref_node"] == r["ref"])]["site"].map(lambda x: x.split("（")[0]).value_counts().items()) if r["ref"] == "その他のサイト" else "", axis=1)
+    fl = fl.sort_values(["ref_order", "channel_order", "landing_order"]).reset_index(drop=True)
+    save("ga_flow", fl, ["mart_ga.json"])
 
     # =========================================================
     # 2. DROP：投稿・登録・いいね・アンケート
@@ -236,6 +274,11 @@ def build(SRC):
     po["detail"] = po["origin"].map(detail)
     po["posts_per_person"] = (po["posts"] / po["people"]).round(1)
     save("drop_poster_origin", po, ["mart_action_drop.json", "mart_user_allevent.json"])
+    # 運営メンバーの投稿も含めた版（運営メンバーは別の行にする）
+    opc = drop[drop["is_op"]]
+    po_all = pd.concat([po, pd.DataFrame([{"origin": "運営メンバー", "people": int(opc["account_id"].nunique()), "posts": int(len(opc)), "detail": "",
+                                            "posts_per_person": round(len(opc) / max(1, opc["account_id"].nunique()), 1)}])], ignore_index=True)
+    save("drop_poster_origin_all", po_all, ["mart_action_drop.json", "mart_user_allevent.json"])
 
     # 日別：投稿（一般／運営）と新規登録
     dd = []
@@ -243,6 +286,7 @@ def build(SRC):
         dd.append({"date": d, "period": period(d),
                    "general": int((gen["date"] == d).sum()),
                    "operation": int(((drop["date"] == d) & drop["is_op"]).sum()),
+                   "posts_all": int((drop["date"] == d).sum()),
                    "registrations": int((reg["date"] == d).sum())})
     save("drop_daily", pd.DataFrame(dd), ["mart_action_drop.json", "mart_user.json"])
 
@@ -263,13 +307,36 @@ def build(SRC):
     hr["posts"] = hr["hour"].map(gen["hour"].value_counts()).fillna(0).astype(int)
     hr["label"] = hr["hour"].map(lambda h: f"{h}時")
     save("drop_hour", hr, ["mart_action_drop.json"])
+    # 運営メンバーの投稿も含めた版
+    drop["hour"] = drop["post_dated_at"].str[11:13].astype(int)
+    hr_all = pd.DataFrame({"hour": range(24)})
+    hr_all["posts"] = hr_all["hour"].map(drop["hour"].value_counts()).fillna(0).astype(int)
+    hr_all["label"] = hr_all["hour"].map(lambda h: f"{h}時")
+    save("drop_hour_all", hr_all, ["mart_action_drop.json（運営メンバーの投稿を含む）"])
+
+    # 投稿の集計（一般のみ／運営メンバーを含む）：ページの切り替えで使う
+    ops = drop[drop["is_op"]]
+    def post_summary(d, key, label):
+        return {"ops": key, "label": label, "posts": int(len(d)), "posters": int(d["account_id"].nunique()),
+                "evening_posts": int(d["hour"].between(17, 22).sum()), "evening_pct": round(float(d["hour"].between(17, 22).mean()) * 100, 1),
+                "no_spot_posts": int(d["event_id"].isna().sum()), "no_spot_pct": round(float(d["event_id"].isna().mean()) * 100, 1),
+                "op_posts": int(len(ops)), "op_people": int(ops["account_id"].nunique())}
+    ps = pd.DataFrame([post_summary(gen, "general", "一般の投稿（運営メンバー以外）"),
+                       post_summary(drop, "all", "運営メンバーを含む投稿")])
+    save("drop_posts", ps, ["mart_action_drop.json"])
 
     # 属性：投稿者（一般）と映画祭きっかけの新規登録者
     reg_attr = reg[["account_id"]].merge(ua[["account_id", "gender", "age_group"]], on="account_id", how="left")
-    AGE = ["10代", "20代", "30代", "40代", "50代", "60代", "70代以上"]
+    # 人数が少なく個人が特定されやすい区分はまとめる（10代以下→20代以下、50代以上）
+    AGE_MAP = {"0代": "20代以下", "10代": "20代以下", "20代": "20代以下", "30代": "30代", "40代": "40代"}
+    def age_band(x):
+        if not isinstance(x, str):
+            return "不明"
+        return AGE_MAP.get(x, "50代以上")
+    AGE = ["20代以下", "30代", "40代", "50代以上", "不明"]
     ag = pd.DataFrame({"age_group": AGE})
-    ag["posters"] = ag["age_group"].map(pu["age_group"].value_counts()).fillna(0).astype(int)
-    ag["registrants"] = ag["age_group"].map(reg_attr["age_group"].value_counts()).fillna(0).astype(int)
+    ag["posters"] = ag["age_group"].map(pu["age_group"].map(age_band).value_counts()).fillna(0).astype(int)
+    ag["registrants"] = ag["age_group"].map(reg_attr["age_group"].map(age_band).value_counts()).fillna(0).astype(int)
     ag = ag[(ag["posters"] + ag["registrants"]) > 0]
     save("drop_age", ag, ["mart_action_drop.json", "mart_user.json", "mart_user_allevent.json"])
     GEN = ["男性", "女性", "無回答"]
@@ -283,8 +350,7 @@ def build(SRC):
     tk = Tokenizer()
     STOP = {"こと", "もの", "よう", "ため", "それ", "これ", "ここ", "そこ", "さん", "の", "ん", "一", "日", "中", "前", "後", "時", "今", "人"}
     COMPOUNDS = ["品川国際映画祭", "品川セントラルガーデン", "セントラルガーデン", "品川インターシティ", "グランドコモンズ", "イルミネーション", "クリスマス"]
-    cnt = Counter()
-    for _, r in gen.iterrows():
+    def words_of(r):
         text = " ".join(str(r[f"word{k}"]) for k in range(1, 6) if pd.notna(r[f"word{k}"]))
         words = set()
         for c in COMPOUNDS:                     # 固有名詞はひとかたまりで数える（「品川」を含むものは「品川」にも数える）
@@ -299,11 +365,54 @@ def build(SRC):
                 w = t.base_form if t.base_form != "*" else t.surface
                 if w not in STOP and not re.fullmatch(r"[0-9０-９]+", w):
                     words.add(w)
-        cnt.update(words)
-    wd = pd.DataFrame(sorted(cnt.items(), key=lambda kv: (-kv[1], kv[0])), columns=["word", "posts"])   # 同数は五十音順（実行ごとに順番が変わらないように）
-    wd = wd[wd["posts"] >= 3].head(20).reset_index(drop=True)
-    wd["share_pct"] = (wd["posts"] / len(gen) * 100).round(1)
+        return words
+
+    # 言葉のまとまり（言葉の意味で手で分けたもの）
+    THEME = {"品川": "まち・場所", "街": "まち・場所", "ビル": "まち・場所", "品川セントラルガーデン": "まち・場所", "品川インターシティ": "まち・場所",
+             "映画": "映画祭（上映・ステージ）", "品川国際映画祭": "映画祭（上映・ステージ）", "音楽": "映画祭（上映・ステージ）",
+             "ステージ": "映画祭（上映・ステージ）", "演奏": "映画祭（上映・ステージ）",
+             "イルミネーション": "冬の夜（イルミネーション）", "クリスマス": "冬の夜（イルミネーション）"}
+    THEME_ORDER = ["まち・場所", "映画祭（上映・ステージ）", "冬の夜（イルミネーション）", "そのほか"]
+
+    from itertools import combinations
+    def word_tables(posts):
+        """posts の言葉の表（使った人数3人以上）と、共起（2人以上が使った言葉どうし、2人以上が一緒に使った組み合わせ）"""
+        cnt, who, post_words = Counter(), {}, []
+        for _, r in posts.iterrows():
+            words = words_of(r)
+            cnt.update(words)
+            post_words.append((r["account_id"], words))
+            for w in words:
+                who.setdefault(w, set()).add(r["account_id"])
+        # 同じ人が何度使っても1人と数える（同じ人の似た投稿で数が膨らまないように）
+        wd = pd.DataFrame([(w, len(who[w]), cnt[w]) for w in cnt], columns=["word", "people", "posts"])
+        wd = wd.sort_values(["people", "posts", "word"], ascending=[False, False, True])
+        wd = wd[wd["people"] >= 3].head(20).reset_index(drop=True)
+        wd["share_pct"] = (wd["people"] / posts["account_id"].nunique() * 100).round(1)   # 投稿した人のうち使った人の割合
+        wd["theme"] = wd["word"].map(lambda w: THEME.get(w, "そのほか"))
+        wd["theme_order"] = wd["theme"].map(THEME_ORDER.index)
+        cw = {w for w, a in who.items() if len(a) >= 2}
+        pair_people, pair_posts = {}, Counter()
+        for acc, ws in post_words:
+            for x, y in combinations(sorted(ws & cw), 2):
+                pair_posts[(x, y)] += 1
+                pair_people.setdefault((x, y), set()).add(acc)
+        edges = [(x, y, len(a), pair_posts[(x, y)]) for (x, y), a in pair_people.items() if len(a) >= 2]
+        edges.sort(key=lambda e: (-e[2], -e[3], e[0], e[1]))
+        nodes = sorted({w for e in edges for w in e[:2]}, key=lambda w: (-len(who[w]), -cnt[w], w))
+        co = [{"type": "node", "word": w, "people": len(who[w]), "posts": cnt[w], "theme": THEME.get(w, "そのほか"),
+               "source": None, "target": None} for w in nodes]
+        co += [{"type": "edge", "word": None, "people": n, "posts": k, "theme": None, "source": x, "target": y} for x, y, n, k in edges]
+        return wd, pd.DataFrame(co)
+
+    # 一般の投稿（運営メンバー以外）
+    wd, co = word_tables(gen)
     save("drop_words", wd, ["mart_action_drop.json（word1〜word5）"])
+    save("drop_cooc", co, ["mart_action_drop.json（word1〜word5）"])
+    # 運営メンバーの投稿も含めた版（ページの「運営の投稿を含める」で切り替える）
+    wd_all, co_all = word_tables(drop)
+    save("drop_words_all", wd_all, ["mart_action_drop.json（word1〜word5、運営メンバーの投稿を含む）"])
+    save("drop_cooc_all", co_all, ["mart_action_drop.json（word1〜word5、運営メンバーの投稿を含む）"])
 
     # 登録時アンケート（映画祭：q1・q2、番号のまま）
     sv = load("stg_user_persona_note_expanded")
@@ -349,6 +458,16 @@ def build(SRC):
         "likes_operation": like_op,
         "like_not_in_mart": like_not_in_mart,
         "survey_n": int(sv["account_id"].nunique()),
+        "ga_other_unknown": int(ga["group"].isin(["他イベント由来", "要確認"]).sum()),
+        "ga_related_users": int((~ga["group"].isin(["他イベント由来", "要確認"])).sum()),
+        "ga_cinema_pct_related": round(float(cin.sum()) / int((~ga["group"].isin(["他イベント由来", "要確認"])).sum()) * 100, 1),
+        "ga_intranet_users": int((ga["channel"] == "社内イントラ").sum()),
+        "ga_search_users": int(ga["site"].isin(["Google検索", "Yahoo!検索", "Bing検索"]).sum()),
+        "ga_search_other_pct": round(float((ga["site"].isin(["Google検索", "Yahoo!検索", "Bing検索"]) & (ga["seg"] == "other")).sum()) / max(1, int(ga["site"].isin(["Google検索", "Yahoo!検索", "Bing検索"]).sum())) * 100, 1),
+        "ga_search_other_users": int((ga["site"].isin(["Google検索", "Yahoo!検索", "Bing検索"]) & (ga["seg"] == "other")).sum()),
+        "reg_pre": int((reg["date"] < EVENT_START).sum()),
+        "posts_pre": int((gen["date"] < EVENT_START).sum()),
+        "posts_no_spot_pct": round(float(gen["event_id"].isna().mean()) * 100, 1),
         "spots": int(len(em)),
     }
     save("kpi", pd.DataFrame([kpi]), ["mart_ga.json", "mart_action_drop.json", "mart_user.json",

@@ -3,9 +3,11 @@
 #   2. drop_aggregate.py で集計する
 #   3. 集計結果とページ本文をパスワードで暗号化（AES-256-GCM、鍵は PBKDF2-SHA256 で作る）
 #   4. ShinagawaCinema2026_DROP_Dashboard.html に書き出す
-# 使い方：update_dashboard.bat をダブルクリック（または python scripts/build_dashboard.py）
+# 使い方：リポジトリのフォルダで python scripts/build_dashboard.py
 # パスワードは実行時に聞かれる。環境変数 DASHBOARD_PASSWORD があればそれを使う。
-import base64, datetime, getpass, glob, hashlib, json, os, sys, tempfile, zipfile
+# 必要なライブラリ（pandas・janome・cryptography）がなければ、最初に自動で入れる。
+# 画面に出したメッセージとエラーの内容は update_log.txt にも残す（パスワードは残さない。GitHub には上げない）。
+import base64, datetime, getpass, glob, hashlib, importlib, importlib.util, json, os, platform, site, subprocess, sys, tempfile, traceback, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -13,9 +15,46 @@ RAW = os.path.join(ROOT, "raw")
 ASSETS = os.path.join(HERE, "assets")
 OUTPUT = os.path.join(ROOT, "ShinagawaCinema2026_DROP_Dashboard.html")
 ITERATIONS = 600_000
+LOG = os.path.join(ROOT, "update_log.txt")
+REQUIRED = ["pandas", "janome", "cryptography"]   # import 名と pip のパッケージ名が同じもの
 
-sys.path.insert(0, HERE)
-import drop_aggregate as agg  # noqa: E402
+
+class Tee:
+    """画面に出す文字を update_log.txt にも書く。"""
+    def __init__(self, stream, log):
+        self.stream, self.log = stream, log
+    def write(self, s):
+        self.stream.write(s)
+        self.log.write(s)
+        self.log.flush()
+    def flush(self):
+        self.stream.flush()
+    def __getattr__(self, name):   # encoding・isatty などは画面側のものを使う
+        return getattr(self.stream, name)
+
+
+def missing_packages():
+    importlib.invalidate_caches()
+    return [m for m in REQUIRED if importlib.util.find_spec(m) is None]
+
+
+def ensure_packages():
+    """必要なライブラリがなければ pip で入れる。"""
+    missing = missing_packages()
+    if not missing:
+        return
+    print("必要なライブラリ（" + "・".join(missing) + "）が入っていないので、いま入れます。1〜3分かかります。")
+    req = os.path.join(ROOT, "requirements.txt")
+    for extra in ([], ["--user"]):
+        r = subprocess.run([sys.executable, "-m", "pip", "install", "--disable-pip-version-check", *extra, "-r", req],
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
+        print(r.stdout[-3000:])
+        if extra:
+            site.addsitedir(site.getusersitepackages())   # 初めて --user で入れたときの置き場所を読みにいく
+        if not missing_packages():
+            print("ライブラリを入れました。続けます。")
+            return
+    raise RuntimeError("NO_PACKAGES:" + "・".join(missing_packages()))
 
 # 使う元データ（10ファイルのうち7つ）と中身の説明
 INPUT_FILES = {
@@ -28,23 +67,30 @@ INPUT_FILES = {
     "stg_user_persona_note_expanded.json": "登録時アンケート",
 }
 
-# 集計表ごとの「使っている図」と「元データの列」
+# 集計表ごとの「使っている図」と「元データの列」（番号はページの節）
 SOURCES = {
-    "kpi": ("主要な数字", "上のカード・要点・見出しの数字", "mart_ga（user_pseudo_id・campaign・utm_source・page_referrer ほか）、mart_action_drop（account_id・post_dated_at・event_id・word1〜5）、mart_user（account_id）、mart_inspiration（inspiration_id）"),
-    "ga_group": ("流入の大分類", "1. 内訳の帯グラフ", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer"),
-    "ga_channel": ("流入経路別", "1. 経路別ランキング・告知期間と開催期間の比較、5. 流入経路の一覧", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer・event_date_jp"),
-    "ga_site": ("参照元サイト別", "1. 参照元サイト別", "mart_ga：page_referrer（ドメイン）"),
-    "ga_daily": ("日別の新規訪問者", "2. 日別の新規訪問者", "mart_ga：event_date_jp・campaign・utm_source"),
-    "ga_daily_channel": ("流入経路×日別", "2. 経路ごとの日別・詳細データ", "mart_ga：event_date_jp と流入経路"),
-    "ga_landing": ("最初に開いたページ", "5. 着地ページ", "mart_ga：page_location"),
-    "drop_daily": ("日別の投稿と新規登録", "3. 開催期間の日別投稿数と新規登録", "mart_action_drop：post_dated_at・is_operation_member、mart_user：created_at"),
-    "drop_poster_origin": ("投稿者の登録経路", "3. 投稿者・投稿の内訳", "mart_action_drop：account_id、mart_user_allevent：inflow_event_id・created_at"),
-    "drop_spot": ("スポット別の投稿", "3. スポット別の投稿数", "mart_action_drop：event_id、int_event_master：event_id・event_name"),
-    "drop_hour": ("投稿の時刻", "3. 投稿の時刻", "mart_action_drop：post_dated_at"),
-    "drop_age": ("年代", "3. 投稿者・新規登録者の属性", "mart_user_allevent：age_group"),
-    "drop_gender": ("性別", "3. 投稿者・新規登録者の属性", "mart_user_allevent：gender"),
-    "drop_words": ("投稿に出てくる言葉", "4. 投稿の中身", "mart_action_drop：word1〜word5（形態素解析で名詞を抽出）"),
-    "survey_codes": ("登録時アンケート", "5. 登録時アンケート", "stg_user_persona_note_expanded：questionnaire_q1・q2"),
+    "kpi": ("主要な数字", "要点・各節の見出しと説明文の数字", "mart_ga（user_pseudo_id・campaign・utm_source・page_referrer ほか）、mart_action_drop（account_id・post_dated_at・event_id・word1〜5）、mart_user（account_id）、mart_inspiration（inspiration_id）"),
+    "ga_group": ("流入の大分類", "要点（新規訪問者の内訳）、1. の説明文", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer"),
+    "ga_channel": ("流入経路別", "要点、1. 期間で変わった経路、2. 経路ごとの日別、6. 流入経路の一覧", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer・event_date_jp"),
+    "ga_flow": ("リンク元 × 流入経路 × 最初のページ", "要点（検索から来た人）、1. リンク元と最初のページ（流れ図）", "mart_ga：page_referrer（ドメイン）・campaign・utm_source・page_location"),
+    "ga_site": ("参照元サイト別", "6. 参照元サイト", "mart_ga：page_referrer（ドメイン）・page_location"),
+    "ga_daily": ("日別の新規訪問者", "2. 日別の新規訪問者（告知の種類別）、3. 訪問・登録・投稿の日別", "mart_ga：event_date_jp・campaign・utm_source"),
+    "ga_daily_channel": ("流入経路 × 日別", "2. 経路ごとの日別、6. 経路ごとの日別", "mart_ga：event_date_jp と流入経路"),
+    "ga_landing": ("最初に開いたページ", "1. の説明文", "mart_ga：page_location"),
+    "drop_daily": ("日別の投稿と新規登録", "要点（新規登録）、3. 訪問・登録・投稿の日別", "mart_action_drop：post_dated_at・is_operation_member、mart_user：created_at"),
+    "drop_posts": ("投稿の要約（一般のみ／運営を含む）", "3.・4. の見出しと説明文（切り替えで変わる数字）", "mart_action_drop：account_id・post_dated_at・event_id・is_operation_member"),
+    "drop_poster_origin": ("投稿した人の登録の経路", "3. 投稿した人（一般の投稿）", "mart_action_drop：account_id、mart_user_allevent：inflow_event_id・created_at"),
+    "drop_poster_origin_all": ("投稿した人の登録の経路（運営を含む）", "3. 投稿した人（運営の投稿を含めたとき）", "mart_action_drop：account_id・is_operation_member、mart_user_allevent：inflow_event_id・created_at"),
+    "drop_spot": ("スポット別の投稿", "3. スポット（ドーナツ）、7. スポット別の投稿", "mart_action_drop：event_id、int_event_master：event_id・event_name"),
+    "drop_hour": ("投稿の時刻", "要点（夜の投稿）、3. 投稿の時刻（一般の投稿）", "mart_action_drop：post_dated_at"),
+    "drop_hour_all": ("投稿の時刻（運営を含む）", "3. 投稿の時刻（運営の投稿を含めたとき）", "mart_action_drop：post_dated_at・is_operation_member"),
+    "drop_words": ("投稿に出てくる言葉", "4. 投稿の言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（名詞を取り出し、使った人数で数える）"),
+    "drop_words_all": ("投稿に出てくる言葉（運営を含む）", "4. 投稿の言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
+    "drop_cooc": ("一緒に使われた言葉", "4. 一緒に使われた言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（同じ投稿に出た言葉の組を、使った人数で数える）"),
+    "drop_cooc_all": ("一緒に使われた言葉（運営を含む）", "4. 一緒に使われた言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
+    "drop_age": ("年代", "7. 投稿した人・新規登録者の属性", "mart_user_allevent：age_group（50代以上はまとめる）"),
+    "drop_gender": ("性別", "7. 投稿した人・新規登録者の属性", "mart_user_allevent：gender"),
+    "survey_codes": ("登録時アンケート", "7. 登録時アンケート", "stg_user_persona_note_expanded：questionnaire_q1・q2"),
 }
 
 
@@ -90,8 +136,8 @@ def ask_password():
         return pw
     while True:
         pw = getpass.getpass("ページのパスワードを入力してください（画面には表示されません）：")
-        if len(pw) < 8:
-            print("8文字以上にしてください。")
+        if len(pw) < 4:
+            print("4文字以上にしてください。")
             continue
         if getpass.getpass("確認のため、もう一度入力してください：") != pw:
             print("一致しませんでした。もう一度お願いします。")
@@ -118,10 +164,23 @@ def script_safe(text):
     return text.replace("</", "<\\/")
 
 
+def load_site_names():
+    """公開したくない参照元ドメインの表示名（例：社内サイト）。raw フォルダに置くので GitHub には上がらない。"""
+    path = os.path.join(RAW, "site_names.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
 def main():
+    ensure_packages()
+    sys.path.insert(0, HERE)
+    global agg
+    import drop_aggregate as agg  # noqa: E402
     src, label = find_input()
     print(f"元データ：{label}")
-    results, _ = agg.build(src)
+    results, _ = agg.build(src, load_site_names())
     inputs = describe_inputs(src)
     results["_inputs"] = inputs
     results["_sources"] = [
@@ -148,6 +207,8 @@ def main():
         ("/*__SHIM__*/", read("shim.js")),
         ("/*__CHARTS__*/", read("charts.js")),
         ("/*__DRAW__*/", read("draw.js")),
+        ("/*__DRAW2__*/", read("draw2.js")),
+        ("/*__PAGE__*/", read("page.js")),
         ("/*__APP__*/", read("app.js")),
     ]:
         assert key in html, key
@@ -160,5 +221,39 @@ def main():
     print("GitHub に上げるのはこの HTML とスクリプトだけです（raw フォルダは上がりません）。")
 
 
+HINTS = {
+    "NO_PACKAGES": "ライブラリを入れられませんでした。社内ネットワークで pip のダウンロードが止められている可能性があります。"
+                   "情報システムの担当に「Python の pip で pandas・janome・cryptography を入れたい」と相談してください。",
+}
+
+
+def run():
+    log = open(LOG, "w", encoding="utf-8")
+    sys.stdout, sys.stderr = Tee(sys.__stdout__, log), Tee(sys.__stderr__, log)
+    print(f"Python {platform.python_version()}（{sys.executable}）／{platform.platform()}")
+    try:
+        main()
+        print("完了しました。ShinagawaCinema2026_DROP_Dashboard.html をブラウザで開いて確かめてください。")
+        return 0
+    except SystemExit as e:   # 元データが見つからないなど、こちらで用意したメッセージ
+        if e.code not in (None, 0):
+            print("\n[止まりました] " + str(e.code))
+        return 1
+    except KeyboardInterrupt:
+        print("\n中断しました。")
+        return 1
+    except Exception as e:
+        print("\n[止まりました] ダッシュボードを作れませんでした。")
+        key = str(e).split(":", 1)[0]
+        if key in HINTS:
+            print(HINTS[key])
+        else:
+            traceback.print_exc()
+            print("この画面の内容は update_log.txt にも残っています。Claude に「update_log.txt を見て」と伝えてください。")
+        return 1
+    finally:
+        log.flush()
+
+
 if __name__ == "__main__":
-    main()
+    sys.exit(run())

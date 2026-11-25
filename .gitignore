@@ -9,3 +9,4 @@ __pycache__/
 # 手元の作業ファイル
 out/
 *.csv
+update_log.txt
