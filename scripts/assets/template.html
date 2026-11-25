@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>品川国際映画祭2026 × みんまちDROP 流入・利用レポート</title>
+<style>
+:root {
+  --color-fg: #1f2328; --color-fg-muted: #5b6770; --color-bg: #fafaf8; --color-panel: #ffffff; --color-border-line: #e3e6e8;
+  --color-ok: #2A78D6; --color-warn: #F5B82E; --color-bad: #D03B3B;
+  --font-anthropic-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo", "Noto Sans JP", system-ui, sans-serif;
+  --cds-font-size-caption: 12px; --cds-font-size-body: 14px; --cds-font-size-heading: 16px; --cds-font-size-title: 22px; --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 16px; --cds-gap-xl: 28px;
+  --cds-pad-sm: 6px; --cds-pad-md: 10px; --cds-pad-lg: 16px; --cds-radius: 8px;
+  --cds-chart-grid: #edf0f1; --cds-chart-axis: #c3cbcf; --cds-text-secondary: #5b6770;
+  --cds-surface-popover: #ffffff; --cds-border: #d9dee1; --cds-shadow-popover: 0 4px 14px rgba(0,0,0,.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --color-fg: #e8eaeb; --color-fg-muted: #a3adb3; --color-bg: #16191b; --color-panel: #1e2225; --color-border-line: #323a3f;
+    --cds-chart-grid: #2b3236; --cds-chart-axis: #4a555b; --cds-text-secondary: #a3adb3; --cds-surface-popover: #262b2e; --cds-border: #3a4449; }
+}
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
+#dash-root { max-width: 1280px; margin: 0 auto; padding: 24px 24px 40px; }
+@media (max-width: 520px) { #dash-root { padding: 16px 12px 32px; } }
+.dash-skeleton { color: transparent; }
+.sc-foot { margin-top: var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.sc-cap-after { margin: var(--cds-gap-sm) 0 0; }
+.sc-csv { font: inherit; font-size: 11px; padding: 2px 10px; border: 1px solid var(--color-border-line); border-radius: 999px; background: var(--color-panel); color: var(--color-fg); cursor: pointer; }
+.sc-csv:hover { border-color: #0E3B4A; }
+.sc-mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+/* パスワード画面 */
+.sc-login { max-width: 460px; margin: 12vh auto 0; background: var(--color-panel); border: 1px solid var(--color-border-line); border-top: 3px solid #0E3B4A; border-radius: var(--cds-radius); padding: 28px; }
+.sc-login h1 { font-size: 18px; font-weight: 600; margin: 0 0 8px; line-height: 1.4; }
+.sc-login p { font-size: 13px; color: var(--color-fg-muted); margin: 0 0 16px; line-height: 1.6; }
+.sc-login form { display: flex; gap: 8px; }
+.sc-login input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--color-border-line); border-radius: 6px; background: var(--color-bg); color: var(--color-fg); }
+.sc-login button { font: inherit; font-size: 14px; font-weight: 600; padding: 8px 16px; border: 0; border-radius: 6px; background: #0E3B4A; color: #fff; cursor: pointer; }
+.sc-login button:disabled { opacity: .6; cursor: wait; }
+.sc-login-msg { min-height: 1.4em; margin: 10px 0 0 !important; color: var(--color-bad) !important; }
+.sc-login-meta { margin: 16px 0 0 !important; font-size: 11px !important; border-top: 1px solid var(--color-border-line); padding-top: 12px; }
+@media print { .sc-toc { position: static; } }
+/*__DASHBOARD_CSS__*/
+</style>
+</head>
+<body>
+<div id="dash-root">
+  <section class="sc-login" id="login">
+    <h1>品川国際映画祭2026 × みんまちDROP 流入・利用レポート</h1>
+    <p>このページの数字はパスワードで保護されています。パスワードを入力してください。</p>
+    <form id="login-form" autocomplete="off">
+      <input type="password" id="login-pw" aria-label="パスワード" placeholder="パスワード" autocomplete="current-password" required>
+      <button type="submit" id="login-btn">表示する</button>
+    </form>
+    <p class="sc-login-msg" id="login-msg" role="alert"></p>
+    <p class="sc-login-meta" id="login-meta"></p>
+  </section>
+  <div id="app" hidden></div>
+</div>
+<script id="manifest" type="application/json">/*__MANIFEST__*/</script>
+<script id="encrypted" type="application/json">/*__ENCRYPTED__*/</script>
+<script>/* d3 v7 — ISC License, Copyright Mike Bostock (https://d3js.org) */
+/*__D3__*/</script>
+<script>/*__SHIM__*/</script>
+<script>/*__CHARTS__*/</script>
+<script>/*__DRAW__*/</script>
+<script>/*__APP__*/</script>
+</body>
+</html>

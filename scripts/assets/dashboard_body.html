@@ -1,0 +1,302 @@
+<div class="sc" lang="ja">
+  <header class="sc-head" id="top">
+    <h1>品川国際映画祭2026 × みんまちDROP 流入・利用レポート</h1>
+    <p class="sc-period">集計期間 2026/11/2〜11/14（告知期間 11/2〜11/8／開催期間 11/9〜11/14）・運営メンバーを除外・イベント shinagawa-cinema-2026</p>
+    <p class="sc-lead" id="lead">DROPサイトに新しく来た <b class="dash-skeleton" data-draw="v" data-source="kpi" data-field="ga_users" data-row="0" data-fmt="int">—</b>人のうち <b class="dash-skeleton" data-draw="v" data-source="kpi" data-field="ga_cinema_pct" data-row="0" data-fmt="pct">—</b> が映画祭の告知・配布物（UTM付きリンク・QR）から。映画祭をきっかけに登録した <b class="dash-skeleton" data-draw="v" data-source="kpi" data-field="reg_cinema" data-row="0" data-fmt="int">—</b>人のうち <b class="dash-skeleton" data-draw="v" data-source="kpi" data-field="reg_posted" data-row="0" data-fmt="int">—</b>人が投稿しました。</p>
+  </header>
+
+  <nav class="sc-toc" id="toc" aria-label="目次">
+    <span class="sc-toc-t">目次</span>
+    <a href="#summary" data-target="summary">要点</a>
+    <a href="#sec-where" data-target="sec-where">1. どこから来たか</a>
+    <a href="#sec-when" data-target="sec-when">2. いつ来たか</a>
+    <a href="#sec-drop" data-target="sec-drop">3. DROPでの登録・投稿</a>
+    <a href="#sec-posts" data-target="sec-posts">4. 投稿の中身</a>
+    <a href="#sec-detail" data-target="sec-detail">5. 詳細データ</a>
+    <a href="#sec-sources" data-target="sec-sources">6. 元データと集計</a>
+    <a href="#definitions" data-target="definitions">集計の定義</a>
+  </nav>
+
+  <div class="sc-kpis" id="kpis">
+    <div class="sc-kpi" id="kpi-visitors">
+      <p class="sc-kpi-t">新規訪問者（GA）</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="ga_users" data-row="0" data-fmt="int">—</span><span class="sc-unit">人</span></div>
+      <p class="sc-kpi-s">告知期間 <span data-draw="v" data-source="kpi" data-field="ga_pre_users" data-row="0" data-fmt="int">—</span>人／開催期間 <span data-draw="v" data-source="kpi" data-field="ga_during_users" data-row="0" data-fmt="int">—</span>人</p>
+    </div>
+    <div class="sc-kpi" id="kpi-cinema">
+      <p class="sc-kpi-t">映画祭の告知・配布物から</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="ga_cinema_pct" data-row="0" data-fmt="pct">—</span></div>
+      <p class="sc-kpi-s"><span data-draw="v" data-source="kpi" data-field="ga_cinema_users" data-row="0" data-fmt="int">—</span>人（UTM付きリンク・QR）</p>
+    </div>
+    <div class="sc-kpi" id="kpi-reg">
+      <p class="sc-kpi-t">映画祭をきっかけに新規登録</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="reg_cinema" data-row="0" data-fmt="int">—</span><span class="sc-unit">人</span></div>
+      <p class="sc-kpi-s">新規訪問者の <span data-draw="v" data-source="kpi" data-field="reg_per_visitor_pct" data-row="0" data-fmt="pct">—</span>（IDが別なので目安）</p>
+    </div>
+    <div class="sc-kpi" id="kpi-reg-posted">
+      <p class="sc-kpi-t">新規登録者のうち投稿した人</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="reg_posted" data-row="0" data-fmt="int">—</span><span class="sc-unit">人</span></div>
+      <p class="sc-kpi-s">登録者の <span data-draw="v" data-source="kpi" data-field="reg_posted_pct" data-row="0" data-fmt="pct">—</span></p>
+    </div>
+    <div class="sc-kpi" id="kpi-posts">
+      <p class="sc-kpi-t">一般投稿</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="posts_general" data-row="0" data-fmt="int">—</span><span class="sc-unit">件</span></div>
+      <p class="sc-kpi-s"><span data-draw="v" data-source="kpi" data-field="posters_general" data-row="0" data-fmt="int">—</span>人が投稿（運営の投稿 <span data-draw="v" data-source="kpi" data-field="posts_operation" data-row="0" data-fmt="int">—</span>件は除外）</p>
+    </div>
+    <div class="sc-kpi" id="kpi-likes">
+      <p class="sc-kpi-t">いいね（一般）</p>
+      <div><span class="sc-kpi-v dash-skeleton" data-draw="v" data-source="kpi" data-field="likes_general" data-row="0" data-fmt="int">—</span><span class="sc-unit">件</span></div>
+      <p class="sc-kpi-s"><span data-draw="v" data-source="kpi" data-field="likes_general_people" data-row="0" data-fmt="int">—</span>人から（運営のいいね <span data-draw="v" data-source="kpi" data-field="likes_operation" data-row="0" data-fmt="int">—</span>件は除外）</p>
+    </div>
+  </div>
+
+  <div class="sc-legend" id="legend" aria-label="色の見方">
+    <span><i class="sc-sw" style="background:#BE258D"></i>注目（映画祭の告知経由・一般投稿など）</span>
+    <span><i class="sc-sw" style="background:#B9C4C9"></i>その他・比較対象</span>
+    <span><i class="sc-sw" style="background:#0099AE"></i>増えた・多い <i class="sc-sw" style="background:#E07B39"></i>減った</span>
+    <span><i class="sc-sw" style="background:#2A78D6"></i>確認できること <i class="sc-sw" style="background:#F5B82E"></i>仮説 <i class="sc-sw" style="background:#D03B3B"></i>注意</span>
+  </div>
+
+  <div class="sc-boxes" id="summary">
+    <div class="sc-box sc-ok" id="sum-ok">
+      <h3>確認できること</h3>
+      <ul>
+        <li>新規訪問者の <b data-draw="v" data-source="kpi" data-field="ga_cinema_pct" data-row="0" data-fmt="pct">—</b> が映画祭の告知・配布物から。映画祭公式HP <b data-draw="v" data-source="ga_channel" data-field="users" data-where="channel=映画祭公式HP" data-fmt="int">—</b>人と社内イントラ <b data-draw="v" data-source="ga_channel" data-field="users" data-where="channel=社内イントラ" data-fmt="int">—</b>人が二本柱。</li>
+        <li>会期に入ると現地ポスターが1日 <b data-draw="v" data-source="ga_channel" data-field="pre_daily" data-where="channel=現地ポスター" data-fmt="dec1">—</b>人 → <b data-draw="v" data-source="ga_channel" data-field="during_daily" data-where="channel=現地ポスター" data-fmt="dec1">—</b>人に。PC画面の左側表示用・LINEは告知期間に集中。</li>
+        <li>映画祭をきっかけに登録した <b data-draw="v" data-source="kpi" data-field="reg_cinema" data-row="0" data-fmt="int">—</b>人のうち <b data-draw="v" data-source="kpi" data-field="reg_posted" data-row="0" data-fmt="int">—</b>人が投稿。一般投稿の <b data-draw="v" data-source="kpi" data-field="posts_evening_pct" data-row="0" data-fmt="pct">—</b> が17〜22時。</li>
+      </ul>
+    </div>
+    <div class="sc-box sc-hyp" id="sum-hyp">
+      <h3>仮説</h3>
+      <ul>
+        <li>告知期間はオンライン（PC左側表示・LINE・社内イントラ）、会期中は会場のQR（ポスター・フライヤー・スクリーン）と、効く経路が入れ替わる。</li>
+        <li>夜の上映・イルミネーションの場で投稿している。「仕事」も出てくるので、品川で働く人の仕事帰りの立ち寄りの可能性。</li>
+      </ul>
+    </div>
+    <div class="sc-box sc-warn" id="sum-warn">
+      <h3>注意</h3>
+      <ul>
+        <li>GAは初回訪問の行だけ（再訪・閲覧数は含まない）。11/12 はGAの行が0件で欠損の可能性。</li>
+        <li>件数が少ないので割合は参考値。一般のいいねは <b data-draw="v" data-source="kpi" data-field="likes_general" data-row="0" data-fmt="int">—</b>件だけ。</li>
+        <li>他イベント由来 <b data-draw="v" data-source="ga_group" data-field="users" data-where="group=他イベント由来" data-fmt="int">—</b>人、UTMが判読できない <b data-draw="v" data-source="ga_group" data-field="users" data-where="group=要確認" data-fmt="int">—</b>人は映画祭の経路と分けています。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 1 -->
+  <div class="sc-sec" id="sec-where">
+    <h2>1. どこから来たか</h2>
+    <p>GAの初回訪問（first_visit）を1人として、UTM（utm_source）・参照元・最初に開いたページで経路を分けています。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-mix">
+      <h3>映画祭の告知・配布物から来た人が <b data-draw="v" data-source="kpi" data-field="ga_cinema_pct" data-row="0" data-fmt="pct">—</b></h3>
+      <p class="sc-cap">新規訪問者の内訳（大分類）。濃いマゼンタ＝映画祭の告知（オンライン）、淡いマゼンタ＝映画祭の告知（現地・紙）、グレー＝それ以外。</p>
+      <div class="sc-chart sc-short dash-skeleton" data-draw="ga-mix" data-source="ga_group"></div>
+      <p class="sc-subhead">経路別では、映画祭公式HPと社内イントラが二本柱</p>
+      <div class="sc-chart dash-skeleton" data-draw="ch-bars" data-source="ga_channel ga_group"></div>
+    </div>
+    <div class="sc-card sc-wide" id="card-site">
+      <h3>参照元サイトで見ると、映画祭公式サイトが <b data-draw="v" data-source="ga_site" data-field="users" data-where="site=品川国際映画祭 公式サイト" data-fmt="int">—</b>人で最多</h3>
+      <p class="sc-cap">リンク元のサイトが記録された <b data-draw="v" data-source="kpi" data-field="ga_with_referrer" data-row="0" data-fmt="int">—</b>人の内訳（下の小さな文字はドメイン）。検索（Google・Yahoo!・Bing）から来た人の半分以上は、富山など他イベントのページに着地しています。QR・メール・社内イントラ・PC画面の左側表示などはリンク元が記録されません（<b data-draw="v" data-source="kpi" data-field="ga_no_referrer" data-row="0" data-fmt="int">—</b>人）。マゼンタ＝映画祭の告知（UTM付き）、グレー＝UTMなし、淡いグレー＝他イベント由来・要確認。</p>
+      <div class="sc-chart dash-skeleton" data-draw="ga-site" data-source="ga_site"></div>
+    </div>
+    <div class="sc-card sc-wide" id="card-slope">
+      <h3>会期に入ると現地のQRが伸び、PC左側表示・LINEは減った</h3>
+      <p class="sc-cap">1日あたりの新規訪問者。左＝告知期間（7日）、右＝開催期間（11/12を除く5日）。青緑＝増えた経路、オレンジ＝減った経路。10人以上の経路のみ。</p>
+      <div class="sc-chart sc-tall dash-skeleton" data-draw="ga-slope" data-source="ga_channel"></div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="sc-sec" id="sec-when">
+    <h2>2. いつ来たか</h2>
+    <p>網かけが開催期間（11/9〜11/14）。11/12 はGAの行が0件です（欠損の可能性）。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-ga-daily">
+      <h3>山は 11/6 の <b data-draw="v" data-source="ga_daily" data-field="total" data-where="date=2026-11-06" data-fmt="int">—</b>人と、開幕日 11/9 の <b data-draw="v" data-source="ga_daily" data-field="total" data-where="date=2026-11-09" data-fmt="int">—</b>人</h3>
+      <p class="sc-cap">日別の新規訪問者。マゼンタ＝映画祭の告知経由、グレー＝それ以外。</p>
+      <div class="sc-chart sc-tall dash-skeleton" data-draw="ga-daily" data-source="ga_daily"></div>
+    </div>
+    <div class="sc-card sc-wide" id="card-multiples">
+      <h3>経路ごとの日別の動き</h3>
+      <p class="sc-cap">社内イントラは 11/6・11/9、LINEは 11/6 に集中。公式HPは会期前から毎日のように流入。10人以上の経路のみ・縦軸は経路ごとに異なります。</p>
+      <div class="sc-chart dash-skeleton" data-draw="ga-multiples" data-source="ga_daily_channel ga_channel ga_daily"></div>
+    </div>
+    <div class="sc-card sc-wide" id="card-heat">
+      <h3>詳細データ：流入経路 × 日別の人数</h3>
+      <p class="sc-cap">すべての経路の日別人数。青緑が濃いほど多い。斜線は 11/12（GA欠損の可能性）。</p>
+      <div class="sc-chart dash-skeleton" data-draw="ga-heat" data-source="ga_daily_channel ga_channel ga_daily"></div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="sc-sec" id="sec-drop">
+    <h2>3. DROPでの登録・投稿</h2>
+    <p>運営メンバー（is_operation_member＝TRUE）の投稿・いいねは「一般」から除いています。スタンプラリーのデータはありません。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-waffle">
+      <h3>投稿者 <b data-draw="v" data-source="kpi" data-field="posters_general" data-row="0" data-fmt="int">—</b>人のうち <b data-draw="v" data-source="drop_poster_origin" data-field="people" data-where="origin=映画祭をきっかけに新規登録" data-fmt="int">—</b>人は映画祭をきっかけに登録した人。以前からの会員は1人 <b data-draw="v" data-source="drop_poster_origin" data-field="posts_per_person" data-where="origin=以前からの会員" data-fmt="dec1">—</b>件とよく投稿</h3>
+      <p class="sc-cap">1マス＝1人（上）、1件（下）。登録経路は mart_user_allevent の流入イベントと登録日で判定。</p>
+      <div class="sc-chart sc-short dash-skeleton" data-draw="drop-waffle" data-source="drop_poster_origin"></div>
+    </div>
+    <div class="sc-card" id="card-drop-daily">
+      <h3>投稿は会期中だけ。最多は 11/11 と 11/14 の各 <b data-draw="v" data-source="drop_daily" data-field="general" data-where="date=2026-11-11" data-fmt="int">—</b>件</h3>
+      <p class="sc-cap">マゼンタ＝一般投稿、グレー＝運営の投稿。下段の「登録」＝その日に映画祭をきっかけに登録した人数。告知期間の投稿・登録は0件。</p>
+      <div class="sc-chart sc-tall dash-skeleton" data-draw="drop-daily" data-source="drop_daily"></div>
+    </div>
+    <div class="sc-card" id="card-hour">
+      <h3>一般投稿の <b data-draw="v" data-source="kpi" data-field="posts_evening_pct" data-row="0" data-fmt="pct">—</b> が17〜22時</h3>
+      <p class="sc-cap">投稿した時刻（0〜23時）。マゼンタ＝17〜22時。最多は20時台の <b data-draw="v" data-source="drop_hour" data-field="posts" data-where="hour=20" data-fmt="int">—</b>件。</p>
+      <div class="sc-chart dash-skeleton" data-draw="drop-hour" data-source="drop_hour"></div>
+    </div>
+    <div class="sc-card" id="card-spot">
+      <h3>スポットを選ばない投稿が <b data-draw="v" data-source="kpi" data-field="posts_no_spot_general" data-row="0" data-fmt="int">—</b>件。選ぶなら MAIN THEATER</h3>
+      <p class="sc-cap">スポット別の投稿数。マゼンタ＝一般投稿、グレー＝運営の投稿。</p>
+      <div class="sc-chart dash-skeleton" data-draw="drop-spot" data-source="drop_spot"></div>
+    </div>
+    <div class="sc-card" id="card-attr">
+      <h3>投稿者・新規登録者の属性</h3>
+      <p class="sc-cap">投稿者＝一般投稿をした人、新規登録者＝映画祭をきっかけに登録した人（人数）。</p>
+      <div class="sc-two">
+        <table class="sc-table" data-source="drop_age" data-row-key="age_group">
+          <thead><tr><th data-field="age_group">年代</th><th class="sc-num" data-field="posters">投稿者</th><th class="sc-num" data-field="registrants">新規登録者</th></tr></thead>
+          <tbody data-draw="drop-age-body"></tbody>
+        </table>
+        <table class="sc-table" data-source="drop_gender" data-row-key="gender">
+          <thead><tr><th data-field="gender">性別</th><th class="sc-num" data-field="posters">投稿者</th><th class="sc-num" data-field="registrants">新規登録者</th></tr></thead>
+          <tbody data-draw="drop-gender-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="sc-sec" id="sec-posts">
+    <h2>4. 投稿の中身</h2>
+    <p>一般投稿の5行の詩（word1〜word5）から名詞を取り出し、その言葉を含む投稿数を数えました（3件以上）。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-words">
+      <h3>「品川」<b data-draw="v" data-source="drop_words" data-field="posts" data-where="word=品川" data-fmt="int">—</b>件、「映画」<b data-draw="v" data-source="drop_words" data-field="posts" data-where="word=映画" data-fmt="int">—</b>件、「イルミネーション」<b data-draw="v" data-source="drop_words" data-field="posts" data-where="word=イルミネーション" data-fmt="int">—</b>件がよく使われた</h3>
+      <p class="sc-cap">文字の大きさ＝その言葉を含む投稿数（右の数字）。マゼンタの枠＝上位3語。</p>
+      <div class="sc-chart sc-short dash-skeleton" data-draw="drop-words" data-source="drop_words"></div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="sc-sec" id="sec-detail">
+    <h2>5. 詳細データ</h2>
+    <p>図の元になっている一覧表です。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-channel-table">
+      <h3>流入経路の一覧</h3>
+      <p class="sc-cap">告知期間・開催期間は人数。参照元サイトは page_referrer のドメインと人数。</p>
+      <div class="sc-scroll">
+        <table class="sc-table" data-source="ga_channel" data-row-key="channel">
+          <thead><tr>
+            <th data-field="group">大分類</th>
+            <th data-field="channel">流入経路</th>
+            <th data-field="utm">utm_source</th>
+            <th class="sc-num" data-field="users">新規訪問者</th>
+            <th class="sc-num" data-field="share_pct">構成比</th>
+            <th class="sc-num" data-field="pre">告知期間</th>
+            <th class="sc-num" data-field="during">開催期間</th>
+            <th data-field="sites">参照元サイト（ドメイン）</th>
+            <th data-field="note">補足</th>
+          </tr></thead>
+          <tbody data-draw="ga-channel-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sc-card sc-wide" id="card-landing">
+      <h3>最初に開いたページ（着地ページ）</h3>
+      <p class="sc-cap">映画祭のスポット・案内ページに着地した人の多くは、検索・直接（UTMなし）から来ています。</p>
+      <div class="sc-scroll">
+        <table class="sc-table" data-source="ga_landing" data-row-key="landing">
+          <thead><tr>
+            <th data-field="landing">着地ページ</th>
+            <th class="sc-num" data-field="users">新規訪問者</th>
+            <th class="sc-num" data-field="share_pct">構成比</th>
+            <th class="sc-num" data-field="cinema_online">映画祭の告知（オンライン）</th>
+            <th class="sc-num" data-field="cinema_onsite">映画祭の告知（現地・紙）</th>
+            <th class="sc-num" data-field="no_utm">UTMなし</th>
+            <th class="sc-num" data-field="other_event">他イベント由来</th>
+            <th class="sc-num" data-field="unknown">要確認</th>
+          </tr></thead>
+          <tbody data-draw="ga-landing-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sc-card sc-wide" id="card-survey">
+      <h3>登録時アンケート（選択肢番号のまま）</h3>
+      <p class="sc-cap">映画祭をきっかけに登録した人の回答（Q1・Q2）。設問票が届いたら選択肢名に置き換えます。応募時アンケートは後から追加予定です。</p>
+      <div class="sc-two">
+        <div><h3>Q1</h3><div class="sc-chart dash-skeleton" data-draw="survey" data-q="Q1" data-source="survey_codes"></div></div>
+        <div><h3>Q2</h3><div class="sc-chart dash-skeleton" data-draw="survey" data-q="Q2" data-source="survey_codes"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sc-sec" id="sec-sources">
+    <h2>6. 元データと集計</h2>
+    <p>このページの数字をどのデータから作ったかの記録です。集計の手順は GitHub の scripts/drop_aggregate.py にあります。</p>
+  </div>
+  <div class="sc-grid">
+    <div class="sc-card sc-wide" id="card-inputs">
+      <h3>元データ（入力ファイル）</h3>
+      <p class="sc-cap" data-draw="build-meta">—</p>
+      <div class="sc-scroll">
+        <table class="sc-table">
+          <thead><tr><th>ファイル</th><th>中身</th><th class="sc-num">件数</th><th>指紋（SHA-256の先頭12文字）</th></tr></thead>
+          <tbody data-draw="inputs-body"></tbody>
+        </table>
+      </div>
+      <p class="sc-cap sc-cap-after">指紋が同じなら、同じ元データから作ったページです。元データ自体はGitHubには置いていません。</p>
+    </div>
+    <div class="sc-card sc-wide" id="card-sources">
+      <h3>図と集計表の対応</h3>
+      <p class="sc-cap">各図の元になっている集計表と、使った元データの列。「CSV」で集計表をダウンロードできます。</p>
+      <div class="sc-scroll">
+        <table class="sc-table">
+          <thead><tr><th>集計表</th><th>使っている図・数字</th><th>元データ（列）</th><th class="sc-num">行数</th><th></th></tr></thead>
+          <tbody data-draw="sources-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <details class="sc-details" id="definitions">
+    <summary>集計の定義と、愛着分析に向けたメモ</summary>
+    <h4>共通</h4>
+    <ul>
+      <li>元データ：みんまちDROPの7テーブル（mart_ga・mart_action_drop・mart_user・mart_user_allevent・mart_inspiration・int_event_master・stg_user_persona_note_expanded）。ファイル名・件数は「6. 元データと集計」にあります。</li>
+      <li>集計期間 2026/11/2〜11/14（DROPの公開＝スタンプ期間）。告知期間＝11/2〜11/8、開催期間＝11/9〜11/14。運営メンバーは除外。</li>
+      <li>図の数字は、元データを Python（scripts/drop_aggregate.py）で集計した表から描いています。集計表は「6. 元データと集計」からCSVでダウンロードできます。</li>
+    </ul>
+    <h4>GAの流入経路の分け方</h4>
+    <ul>
+      <li>映画祭の告知：utm_campaign＝shinagawa_cinema の行を utm_source で分類。オンライン＝official_web・intranet・machiapps・line_app・reactivation、現地・紙＝poster・flyer・screen。</li>
+      <li>2ページ目で初回訪問が記録された <span data-draw="v" data-source="kpi" data-field="ga_referrer_fixed" data-row="0" data-fmt="int">—</span>件は、参照元（DROPのTOP）URLのUTMで経路を補いました。</li>
+      <li>UTMなし：自然検索（Google・Yahoo!・Bing）、Instagram（l.instagram.com）、直接・参照元不明。</li>
+      <li>参照元サイト：page_referrer のドメインでまとめました。QRコード・メール・社内イントラなどはリンク元が記録されないため「参照元なし」になります。</li>
+      <li>他イベント由来：culture_snack・toyama_event のUTM、またはUTMなしで富山・大阪などのスポットページに着地した訪問。</li>
+      <li>要確認：utm値が意味の読めない文字列（fuvab…／efbdgvibgvba など）の訪問。うち6件は11/6 16時台のPCからで、テスト配信の可能性。</li>
+    </ul>
+    <h4>DROP</h4>
+    <ul>
+      <li>新規登録＝mart_user の inflow_event_id が shinagawa-cinema-2026 の人。投稿者の登録経路は mart_user_allevent の inflow_event_id と登録日で判定。</li>
+      <li>いいね数は mart_inspiration から運営のいいねを除いて作成。閲覧数は GA に作品ID（click_artwork_id）がないため作れません。</li>
+      <li>言葉は形態素解析（janome）で名詞を取り出し、1投稿で同じ言葉は1回と数えました。「品川国際映画祭」などの固有名詞はひとかたまりで数え、品川を含むものは「品川」にも数えています。</li>
+    </ul>
+    <h4>「品川への愛着」を目的変数にする分析に向けて</h4>
+    <ul>
+      <li>登録時アンケート（映画祭はQ1・Q2）には愛着をたずねる設問が見当たりません。応募時アンケートを後から追加して、愛着の設問を使う予定です。</li>
+      <li>GAの user_pseudo_id と DROPの account_id はほぼ結び付かない（今回のGAで account_id 付きの行は3件）ため、個人単位の説明変数は DROP 側の行動（投稿数・時刻・スポット・登録経路など）が中心になります。</li>
+    </ul>
+  </details>
+  <p class="sc-foot" data-draw="footer">—</p>
+</div>

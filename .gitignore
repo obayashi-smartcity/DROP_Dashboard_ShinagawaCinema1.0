@@ -1,0 +1,11 @@
+# 元データ（アカウント名・投稿本文などを含むので GitHub に上げない）
+raw/*
+!raw/README.md
+
+# Python
+__pycache__/
+*.pyc
+
+# 手元の作業ファイル
+out/
+*.csv
