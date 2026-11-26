@@ -29,6 +29,385 @@
   dash.calc('origin_v', { inputs: ['drop_poster_origin', 'drop_poster_origin_all'], title: '投稿した人の登録の経路（切り替えに合わせた表）', description: '切り替えが「運営を含む」なら drop_poster_origin_all（運営メンバーの行つき）、それ以外は drop_poster_origin',
     fn: (drop_poster_origin, drop_poster_origin_all) => (dash.params().ops === 'all' ? drop_poster_origin_all : drop_poster_origin) });
 
+  // ---------- 3. どんな投稿があったか ----------
+  const themeRows = (rows) => [...rows].sort((a, b) => +a.rank - +b.rank);
+
+  // 投稿のテーマ（使った人数の横棒）。マゼンタ＝「いつもの品川が違って見えた」（まちそのものについて書いたテーマ）
+  dash.draw('post-themes', (el) => {
+    const res = SC.ready(el, ['drop_theme', 'kpi']);
+    if (!res) return;
+    const [rows, kpi] = res;
+    const n = +((kpi[0] || {}).posters_general) || 0;
+    const items = themeRows(rows).map((r) => ({
+      label: r.label,
+      segs: [{ v: +r.people, color: isTrue(r.highlight) ? C.accent : C.gray }],
+      valueText: `${f0(r.people)}人・${f0(r.posts)}件`,
+      tip: [r.label, `書いた人 ${f0(r.people)}人（投稿した ${f0(n)}人の ${r.share_pct}%）`, `投稿 ${f0(r.posts)}件`],
+    }));
+    SC.hbars(el, items, { labelWidth: '13em', valW: '6.5em', max: n || undefined });
+    el.querySelectorAll('.sc-hb-row').forEach((row, i) => { if (isTrue(themeRows(rows)[i].highlight)) row.classList.add('is-hi'); });
+  });
+
+  // テーマごとの代表的な一節。言いたいテーマ（マゼンタ）を先頭に、あとは人数の多い順
+  dash.draw('post-quotes', (el) => {
+    const res = SC.ready(el, ['drop_quotes', 'drop_theme']);
+    if (!res) return;
+    const [qs, th] = res;
+    const order = themeRows(th).sort((a, b) => (isTrue(b.highlight) ? 1 : 0) - (isTrue(a.highlight) ? 1 : 0));
+    const box = SC.el('div', 'sc-qgrid');
+    order.forEach((t) => {
+      const list = qs.filter((q) => q.theme === t.theme).sort((a, b) => +a.no - +b.no);
+      if (!list.length) return;
+      const card = SC.el('div', 'sc-qcard' + (isTrue(t.highlight) ? ' is-hi' : ''));
+      const h = SC.el('p', 'sc-qcard-h');
+      h.append(SC.el('b', '', t.label), SC.el('span', '', `${f0(t.people)}人・${f0(t.posts)}件`));
+      card.append(h);
+      list.forEach((q) => card.append(SC.el('blockquote', 'sc-quote', q.text)));
+      box.append(card);
+    });
+    el.replaceChildren(box);
+  });
+
+  // 要点カードの小さな図：多いテーマ上位と「いつもの品川」
+  dash.draw('mini-themes', (el) => {
+    const res = SC.ready(el, ['drop_theme']);
+    if (!res) return;
+    const all = themeRows(res[0]);
+    const rows = all.slice(0, 3);
+    const hi = all.find((r) => isTrue(r.highlight));
+    if (hi && !rows.includes(hi)) rows.push(hi);
+    const max = d3.max(all, (r) => +r.people) || 1;
+    const box = SC.el('span');
+    rows.forEach((r) => {
+      const row = SC.el('span', 'sc-mrow' + (isTrue(r.highlight) ? ' is-hi' : ''));
+      const t = SC.el('span', 'sc-mrow-t');
+      const bar = SC.el('i'); bar.style.width = `calc((100% - 3.2em) * ${+r.people / max})`;
+      t.append(bar, SC.el('b', '', `${f0(r.people)}人`));
+      row.append(SC.el('span', 'sc-mrow-l', r.label), t);
+      box.append(row);
+    });
+    el.replaceChildren(box);
+  });
+
+  // 「データの扱いとことば」：テーマを決める言葉の一覧
+  dash.draw('theme-defs', (ul) => {
+    const res = SC.ready(ul, ['drop_theme']);
+    if (!res) return;
+    ul.replaceChildren(...[...res[0]].sort((a, b) => +a.order - +b.order)
+      .map((t) => SC.el('li', '', `${t.label}：${String(t.words || '').split('・').join('、')}`)));
+  });
+
+  // ---------- 4. 品川への気持ち（特典応募時アンケート） ----------
+  const APP_SCALE = ['revisit'];   // 選択肢を全部並べる設問（5段階。答えのない選択肢も0人で出す）
+  const appRows = (rows, q) => rows.filter((r) => r.q === q && (APP_SCALE.includes(q) || +r.n > 0)).sort((a, b) => +a.order - +b.order);
+  const appColor = (rows) => { const hi = rows.filter((r) => isTrue(r.hi)); return (r) => (!isTrue(r.hi) ? C.gray : (hi.length > 1 && r !== hi[0] ? C.accentLight : C.accent)); };
+
+  // 選択肢ごとの人数（横棒）。マゼンタ＝その設問で言いたい選択肢（濃い・淡いの2段階のときは、濃い＝いちばん強い答え）
+  dash.draw('app-bars', (el) => {
+    const res = SC.ready(el, ['app_survey', 'kpi']);
+    if (!res) return;
+    const [all, kpi] = res;
+    const n = +((kpi[0] || {}).app_n) || 0;
+    const rows = appRows(all, el.dataset.q);
+    const color = appColor(rows);
+    SC.hbars(el, rows.map((r) => ({
+      label: r.option,
+      segs: [{ v: +r.n, color: color(r) }],
+      valueText: `${f0(r.n)}人`,
+      tip: [r.q_label, `${r.option}：${f0(r.n)}人（${n}人の ${SC.fmt(r.pct, 'pct')}）`],
+    })), { labelWidth: el.dataset.lw || '12em', valW: '3.5em', max: n || undefined });
+  });
+
+  // おすすめ度（0〜10 の縦棒）。マゼンタ＝9・10 をつけた人
+  dash.draw('app-nps', (el) => {
+    const res = SC.ready(el, ['app_survey']);
+    if (!res) return;
+    const rows = res[0].filter((r) => r.q === 'nps').sort((a, b) => +a.order - +b.order);
+    SC.vbars(el, {
+      rows, height: 150, noYAxis: true, every: 1,
+      aria: '親しい人へのおすすめ度（0〜10）ごとの人数。9・10 を強調',
+      x: (r) => r.option,
+      series: [{ key: 'n', color: (r) => (isTrue(r.hi) ? C.accent : C.gray) }],
+      tip: (r) => [`おすすめ度 ${r.option}`, `${f0(r.n)}人`],
+    });
+  });
+
+  // 要点カードの小さな図：再訪意欲の割合（100% の帯）
+  dash.draw('mini-revisit', (el) => {
+    const res = SC.ready(el, ['app_survey']);
+    if (!res) return;
+    const rows = appRows(res[0], 'revisit').filter((r) => +r.n > 0);
+    const color = appColor(rows);
+    const bar = SC.el('span', 'sc-stack is-big');
+    bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', '品川エリアへの再訪意欲が高まったかの回答の割合');
+    const tips = new Map();
+    rows.forEach((r) => {
+      const seg = SC.el('span', 'sc-seg' + (isTrue(r.hi) ? ' is-hi' : ''));
+      seg.style.flex = `${+r.pct} 1 0`;
+      seg.style.background = color(r);
+      if (+r.pct >= 12) seg.textContent = `${f0(r.n)}人`;
+      tips.set(seg, [r.option, `${f0(r.n)}人（${SC.fmt(r.pct, 'pct')}）`]);
+      bar.append(seg);
+    });
+    const leg = SC.el('span', 'sc-mini-leg');
+    rows.forEach((r) => { const sp = SC.el('span'); const i = SC.el('i'); i.style.background = color(r); sp.append(i, r.option); leg.append(sp); });
+    el.replaceChildren(bar, leg);
+    const tip = SC.tip(el);
+    bar.addEventListener('mousemove', (ev) => { const sg = ev.target.closest('.sc-seg'); if (sg && tips.has(sg)) tip.show(ev, tips.get(sg)); else tip.hide(); });
+    bar.addEventListener('mouseleave', () => tip.hide());
+  });
+
+  // 4列のサンキー図（共通）。帯の太さ＝人数や件数。マゼンタ＝はじめは cfg.isOn の流れ、項目を押すとそこを通った流れに切りかわる
+  // cfg: cols[{key, head, sub, order: 並び順の配列 または ordKey: 行の並び順の列}], val（太さに使う列）, unit（人・件）, state（選んだ項目を持つ入れもの）
+  const drawSankey = (el, rows0, cfg) => {
+    const paths = rows0.map((r) => ({ ...r, v: +r[cfg.val] })).filter((r) => r.v > 0);
+    const total = d3.sum(paths, (r) => r.v) || 1;
+    const C4 = cfg.cols, sel = cfg.state.sel;
+    const isOn = (p) => (sel ? C4[sel.col] && p[C4[sel.col].key] === sel.name : cfg.isOn(p));
+    const rank = (c, name) => (c.order ? (c.order.indexOf(name) + 1 || 99) : d3.min(paths.filter((p) => p[c.key] === name), (p) => +p[c.ordKey]));
+    const cols = C4.map((c, ci) => [...new Set(paths.map((p) => p[c.key]))].sort((a, b) => rank(c, a) - rank(c, b))
+      .map((name, o) => {
+        const mine = paths.filter((p) => p[c.key] === name);
+        return { id: ci + '|' + name, name, col: ci, o, v: d3.sum(mine, (p) => p.v), rows: mine, label: cfg.label ? cfg.label(c, name, mine) : name };
+      }));
+    const byId = new Map(cols.flat().map((n) => [n.id, n]));
+    // 帯：隣の列どうし。強調する流れとそれ以外に分けて積む
+    const links = [];
+    for (let ci = 0; ci < C4.length - 1; ci++) {
+      const a = C4[ci].key, b = C4[ci + 1].key;
+      d3.rollups(paths, (v) => ({ on: d3.sum(v.filter(isOn), (p) => p.v), off: d3.sum(v.filter((p) => !isOn(p)), (p) => p.v) }), (p) => p[a], (p) => p[b])
+        .forEach(([x, m]) => m.forEach(([y, s2]) => {
+          if (s2.on) links.push({ s: byId.get(ci + '|' + x), t: byId.get((ci + 1) + '|' + y), v: s2.on, on: true });
+          if (s2.off) links.push({ s: byId.get(ci + '|' + x), t: byId.get((ci + 1) + '|' + y), v: s2.off, on: false });
+        }));
+    }
+    const W = Math.max(720, el.clientWidth || 760);   // せまい画面では横にスクロール
+    const narrow = W < 800;
+    const k = Math.min(15, Math.max(8, 400 / total)) * (narrow ? 0.8 : 1), nodeW = 10, top = 44, pad = narrow ? 10 : 14;
+    const maxN = d3.max(cols, (c) => c.length);
+    const inner = total * k + pad * (maxN - 1);
+    const H = top + inner + 12;
+    el.replaceChildren();
+    const wrap = SC.el('div', 'sc-scroll');
+    el.append(wrap);
+    const svg = d3.select(wrap).append('svg').attr('class', 'sc-svg').attr('width', W).attr('height', H)
+      .attr('role', 'img').attr('aria-label', cfg.aria(total));
+    const probe = svg.append('text').attr('class', 'sc-fl-lab');
+    // ラベルの（ ）は2行目に回す（行動中の感覚・補足）
+    const labW = cols.map((c) => d3.max(c, (n) => d3.max(split2(n.label).map((t, i) => { probe.text(i ? t : `${t} ${n.v}`); return probe.node().getComputedTextLength(); }))) || 0);
+    probe.remove();
+    const lastW = Math.min(labW[3] + 16, narrow ? 170 : 240);   // 数字の幅の分の余裕
+    const xs = [0, 1, 2, 3].map((i) => Math.round(i * (W - lastW - 10 - nodeW) / 3));
+    cols.forEach((c, ci) => {
+      const used = d3.sum(c, (n) => n.v) * k;
+      const gap = c.length > 1 ? Math.min(pad * 2.2, (inner - used) / (c.length - 1)) : 0;
+      let y = top;
+      c.forEach((n) => { n.x = xs[ci]; n.y = y; n.h = Math.max(2, n.v * k); n.out = 0; n.in = 0; y += n.h + gap; });
+    });
+    // 帯の位置：行き先（出どころ）の順に積んで交差を減らす。同じ行き先の中では強調する帯を上に
+    [...links].sort((a, b) => a.t.o - b.t.o || (b.on - a.on)).forEach((l) => { l.sy = l.s.y + l.s.out; l.s.out += l.v * k; });
+    [...links].sort((a, b) => a.s.o - b.s.o || (b.on - a.on)).forEach((l) => { l.ty = l.t.y + l.t.in; l.t.in += l.v * k; });
+    const path = (l) => {
+      const x0 = l.s.x + nodeW, x1 = l.t.x, xm = (x0 + x1) / 2, h = l.v * k;
+      return `M${x0},${l.sy}C${xm},${l.sy} ${xm},${l.ty} ${x1},${l.ty}L${x1},${l.ty + h}C${xm},${l.ty + h} ${xm},${l.sy + h} ${x0},${l.sy + h}Z`;
+    };
+    C4.forEach((c, ci) => {
+      svg.append('text').attr('class', 'sc-fl-head').attr('x', xs[ci]).attr('y', 14).text(`${cfg.num ? cfg.num[ci] : `${ci + 1}.`} ${c.head}`);
+      svg.append('text').attr('class', 'sc-jr-sub').attr('x', xs[ci]).attr('y', 30).text(c.sub);
+    });
+    const tip = SC.tip(el);
+    svg.append('g').selectAll('path').data(links).join('path').attr('class', (l) => 'sc-jr-link' + (l.on ? ' is-on' : ''))
+      .attr('d', path)
+      .on('mousemove', (ev, l) => tip.show(ev, [`${l.s.name} → ${l.t.name}`, `${f0(l.v)}${cfg.unit}${l.on ? '（強調している流れ）' : ''}`]))
+      .on('mouseleave', () => tip.hide());
+    const gn = svg.append('g');
+    gn.selectAll('rect').data(cols.flat()).join('rect').attr('class', (n) => 'sc-fl-node' + (sel && sel.id === n.id ? ' is-sel' : ''))
+      .attr('x', (n) => n.x).attr('y', (n) => n.y).attr('width', nodeW).attr('height', (n) => n.h).attr('rx', 1.5);
+    const labs = cols.flat().map((n) => ({ n, y: n.y + n.h / 2 }));
+    cols.forEach((c, ci) => SC.spread(labs.filter((d) => d.n.col === ci), c.some((n) => split2(n.label)[1]) ? 30 : 15, top + 4, H - 4));
+    const gt = svg.append('g');
+    labs.forEach((d) => {
+      const n = d.n;
+      const [a, b] = split2(n.label);
+      const x = n.x + nodeW + 5;
+      const t = gt.append('text').attr('class', 'sc-fl-lab' + (sel && sel.id === n.id ? ' is-on' : '')).attr('x', x).attr('y', d.ly).attr('dy', b ? '-0.2em' : '0.35em');
+      const maxW = (n.col === 3 ? lastW : xs[1] - nodeW - 12);
+      let name = a;
+      const t1 = t.append('tspan').text(name + ' ');
+      t.append('tspan').attr('class', 'n').text(f0(n.v));
+      while (t.node().getComputedTextLength() > maxW && name.length > 4) { name = name.slice(0, -1); t1.text(name + '… '); }
+      if (b) {
+        const t2 = t.append('tspan').attr('class', 'n').attr('x', x).attr('dy', '1.25em').style('font-size', '11px').text(b);
+        let sub = b;
+        while (t2.node().getComputedTextLength() > maxW && sub.length > 4) { sub = sub.slice(0, -2) + '）'; t2.text(sub.slice(0, -1) + '…）'); }
+      }
+    });
+    const redraw = () => drawSankey(el, rows0, cfg);
+    const pick = (n) => {
+      cfg.state.sel = sel && sel.id === n.id ? null : { id: n.id, col: n.col, name: n.name };
+      tip.hide(); redraw();
+      const back = [...el.querySelectorAll('.sc-fl-hit')].find((r) => r.dataset.id === n.id);   // 描き直しても、押した項目にフォーカスを戻す
+      if (back) back.focus();
+    };
+    gn.selectAll('rect.sc-fl-hit').data(cols.flat()).join('rect').attr('class', 'sc-fl-hit').attr('data-id', (n) => n.id)
+      .attr('x', (n) => n.x - 3).attr('y', (n) => n.y - 4).attr('width', (n) => (n.col === 3 ? lastW + nodeW + 10 : xs[1] - 8)).attr('height', (n) => Math.max(16, n.h + 8))
+      .attr('tabindex', 0).attr('role', 'button')
+      .attr('aria-label', (n) => `${C4[n.col].head}：${n.label} ${n.v}${cfg.unit}。押すと、ここを通った流れを強調`)
+      .on('click', (ev, n) => pick(n))
+      .on('keydown', (ev, n) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(n); } })
+      .on('mousemove', (ev, n) => tip.show(ev, [n.label, `${f0(n.v)}${cfg.unit}（${f0(total)}${cfg.unit}の ${SC.fmt((n.v / total) * 100, 'pct')}）`]
+        .concat(cfg.tip ? cfg.tip(C4[n.col], n.name, n.rows) : []).concat(['押すと、ここを通った流れを強調'])))
+      .on('mouseleave', () => tip.hide());
+    // いま強調している流れ
+    const on = d3.sum(paths.filter(isOn), (p) => p.v);
+    const note = SC.el('p', 'sc-jr-now');
+    note.append(SC.el('i'), sel ? `「${sel.name}」を通った ${f0(on)}${cfg.unit}の流れ（もう一度押すと、はじめの表示に戻ります）` : cfg.note(on));
+    el.append(note);
+  };
+
+  // ---------- 体験の流れ（同じ人を追える DROP の会員データ） ----------
+  // 知った媒体 → 登録の経路 → 投稿 → 品川への再訪意欲。帯の太さ＝人数。マゼンタ＝はじめは「再訪意欲が高まった人」がたどった流れ
+  const J_UP = ['とても高まった', 'やや高まった'];
+  const JOURNEY = {
+    cols: [
+      { key: 'media', head: '知った媒体', sub: '応募時アンケート', order: ['社内告知', 'フライヤー', '会場ポスター', 'LINE公式アカウント', '映画祭WEBサイト', 'DROPの案内メール', '紹介・口コミなど', 'そのほかの媒体', '答えなし', 'わからない（応募なし）'] },
+      { key: 'origin', head: '登録の経路', sub: 'DROP の会員データ', order: ['映画祭で新規登録', '期間中に別の入口から新規登録', '以前からの会員'] },
+      { key: 'post', head: '投稿', sub: '一般の投稿', order: ['「いつもの品川」を書いた', 'ほかのテーマを書いた', '投稿していない'] },
+      { key: 'feel', head: '品川への再訪意欲', sub: '応募時アンケート', order: ['とても高まった', 'やや高まった', 'どちらでもない', 'あまり高まらなかった', '全く高まらなかった', '答えなし', '応募していない'] },
+    ],
+    val: 'people', unit: '人', state: { sel: null },
+    isOn: (p) => J_UP.includes(p.feel),
+    note: (on) => `再訪意欲が高まった ${on}人がたどった流れ（項目を押すと切りかわります）`,
+    aria: (total) => `体験の流れ。知った媒体、登録の経路、投稿、品川エリアへの再訪意欲の順に、${total}人の流れを帯で表した図`,
+  };
+  dash.draw('journey', (el) => {
+    const res = SC.ready(el, ['journey_paths']);
+    if (res) drawSankey(el, res[0], JOURNEY);
+  });
+
+  // ---------- 投稿から読み取った体験の流れ（4層） ----------
+  // ①コンテンツ → ②最初の関心 → ③行動（行動中の感覚） → ④愛着の関心・意向。帯の太さ＝投稿の件数。
+  // マゼンタ＝はじめは ④ が読み取れた投稿の流れ。③ の（ ）は、その行動の投稿にいちばん多く書かれた感覚（同数なら2つまで）
+  const LY_NONE = '読み取れない';
+  const feelsOf = (rows) => d3.rollups(rows.filter((r) => r.feeling), (v) => ({ n: d3.sum(v, (r) => r.v), o: +v[0].feeling_order }), (r) => r.feeling)
+    .sort((a, b) => b[1].n - a[1].n || a[1].o - b[1].o);
+  const LAYERS = {
+    cols: [
+      { key: 'content', head: 'コンテンツ', sub: '映画祭の企画のどれにふれたか', ordKey: 'content_order' },
+      { key: 'interest', head: '最初の関心', sub: 'ふれた直後に「〜たい」', ordKey: 'interest_order' },
+      { key: 'action', head: '行動（行動中の感覚）', sub: '「〜した」＋感じたこと', ordKey: 'action_order' },
+      { key: 'attach', head: '愛着の関心・意向', sub: '品川への「なる・変わる・〜たい」', ordKey: 'attach_order' },
+    ],
+    val: 'posts', unit: '件', state: { sel: null }, num: ['①', '②', '③', '④'],
+    isOn: (p) => p.attach !== LY_NONE,
+    note: (on) => `品川への愛着の関心・意向が読み取れた ${on}件の流れ（項目を押すと切りかわります）`,
+    aria: (total) => `投稿から読み取った体験の流れ。コンテンツ、最初の関心、行動、愛着の関心・意向の順に、一般の投稿 ${total}件を帯で表した図`,
+    label: (c, name, rows) => {
+      if (c.key !== 'action' || name === LY_NONE) return name;
+      const fs = feelsOf(rows);
+      if (!fs.length) return name;
+      const top = fs.filter((f) => f[1].n === fs[0][1].n).slice(0, 2).map((f) => f[0]);
+      return `${name}（${top.join('・')}）`;
+    },
+    tip: (c, name, rows) => {
+      const out = [];
+      if (c.key === 'action' && name !== LY_NONE) {
+        const fs = feelsOf(rows);
+        if (fs.length) out.push(`感じたこと：${fs.map(([f, x]) => `${f} ${x.n}`).join('・')}`);
+      }
+      if (c.key === 'attach' && rows[0] && rows[0].attach_type) out.push(`タイプ：${rows[0].attach_type}`);
+      return out;
+    },
+  };
+  dash.draw('post-layers', (el) => {
+    const res = SC.ready(el, ['post_layers']);
+    if (res) drawSankey(el, res[0], LAYERS);
+  });
+
+  // 投稿の読み取り（4 があるか）× 特典応募時アンケートの再訪意欲。投稿した人ごと。マゼンタ＝高まった（濃い＝とても、淡い＝やや）
+  const CROSS_COLOR = { 'とても高まった': C.accent, 'やや高まった': C.accentLight, '応募していない': C.grayLight };
+  dash.draw('attach-cross', (el) => {
+    const res = SC.ready(el, ['attach_cross']);
+    if (!res) return;
+    const groups = d3.groups([...res[0]].sort((a, b) => +a.row_order - +b.row_order || +a.survey_order - +b.survey_order), (r) => r.post_attach);
+    const max = d3.max(groups, ([, rs]) => d3.sum(rs, (r) => +r.people)) || 1;
+    SC.hbars(el, groups.map(([g, rs]) => {
+      const n = d3.sum(rs, (r) => +r.people);
+      const applied = d3.sum(rs.filter((r) => r.survey !== '応募していない'), (r) => +r.people);
+      return {
+        label: `${g}（${f0(n)}人）`,
+        segs: rs.map((r) => ({ v: +r.people, color: CROSS_COLOR[r.survey] || C.grayMid })),
+        valueText: rs.filter((r) => r.survey !== '応募していない').map((r) => `${r.survey.replace('高まった', '')} ${f0(r.people)}`).join('・') + (n - applied ? `・応募なし ${f0(n - applied)}` : ''),
+        tip: [`投稿から ${g}：${f0(n)}人`].concat(rs.map((r) => `${r.survey} ${f0(r.people)}人`)),
+      };
+    }), { labelWidth: '12em', valW: '14em', max });
+  });
+
+  // 4 愛着の関心・意向の読み取りの例（公開範囲が全体の一般の投稿の行。アカウント名・日時なし）
+  dash.draw('layer-examples', (el) => {
+    const res = SC.ready(el, ['layer_examples']);
+    if (!res) return;
+    const box = SC.el('div', 'sc-lyex');
+    d3.groups([...res[0]].sort((a, b) => +a.attach_order - +b.attach_order || +a.no - +b.no), (r) => r.attach).forEach(([a, rs]) => {
+      const item = SC.el('div', 'sc-lyex-i');
+      const h = SC.el('p', 'sc-lyex-h');
+      h.append(SC.el('b', '', a), SC.el('span', '', rs[0].attach_type));
+      item.append(h);
+      rs.forEach((r) => item.append(SC.el('blockquote', 'sc-quote', r.text)));
+      box.append(item);
+    });
+    el.replaceChildren(box);
+  });
+
+  // 要点カードの小さな図：4 愛着の関心・意向のタイプ別の件数
+  dash.draw('mini-layers', (el) => {
+    const res = SC.ready(el, ['kpi']);
+    if (!res) return;
+    const k = res[0][0] || {};
+    const rows = [['見方・気持ち', +k.ly_view_posts], ['再訪・滞在', +k.ly_revisit_posts], ['関わり・発信', +k.ly_engage_posts]];
+    const max = d3.max(rows, (r) => r[1]) || 1;
+    const box = SC.el('span');
+    rows.forEach(([l, v], i) => {
+      const row = SC.el('span', 'sc-mrow' + (i === 0 ? ' is-hi' : ''));
+      const t = SC.el('span', 'sc-mrow-t');
+      const bar = SC.el('i'); bar.style.width = `calc((100% - 3.2em) * ${v / max})`;
+      t.append(bar, SC.el('b', '', `${f0(v)}件`));
+      row.append(SC.el('span', 'sc-mrow-l', l), t);
+      box.append(row);
+    });
+    el.replaceChildren(box);
+  });
+
+  // 映画祭をきっかけに登録した人を順に追う（下の段は、すぐ上の段の人のうち）。マゼンタ＝最後まで進み、再訪意欲が高まった人
+  dash.draw('reg-funnel', (el) => {
+    const res = SC.ready(el, ['journey_paths']);
+    if (!res) return;
+    const ps = res[0].map((r) => ({ ...r, people: +r.people }));
+    const sum = (f) => d3.sum(ps.filter(f), (p) => p.people);
+    const reg = (p) => p.origin === '映画祭で新規登録';
+    const posted = (p) => reg(p) && p.post !== '投稿していない';
+    const applied = (p) => posted(p) && p.feel !== '応募していない';
+    const up = (p) => applied(p) && J_UP.includes(p.feel);
+    const n0 = sum(reg) || 1;
+    const steps = [
+      ['映画祭をきっかけに登録', sum(reg)],
+      ['うち 投稿した', sum(posted)],
+      ['うち 特典に応募した', sum(applied)],
+      ['うち 再訪意欲が高まった', sum(up)],
+    ];
+    const last = steps.length - 1;
+    SC.hbars(el, steps.map(([label, v], i) => ({
+      label,
+      segs: [{ v, color: i === last ? C.accent : C.gray }],
+      valueText: i ? `${f0(v)}人（${Math.round((v / n0) * 100)}%）` : `${f0(v)}人`,
+      tip: [label, i ? `${f0(v)}人（登録した ${f0(n0)}人の ${SC.fmt((v / n0) * 100, 'pct')}、ひとつ上の段から ${f0(steps[i - 1][1] - v)}人減）` : `${f0(v)}人`],
+    })), { labelWidth: '12em', valW: '6.5em', max: n0 });
+    el.querySelectorAll('.sc-hb-row').forEach((row, i) => { if (i === last) row.classList.add('is-hi'); });
+    const others = sum((p) => !reg(p));
+    if (others) el.append(SC.el('p', 'sc-note', `このほかに、以前からの会員や別の入口から登録した ${f0(others)}人も、投稿や特典への応募をしています（下の図にふくみます）。`));
+  });
+
   // ---------- 要点カードの小さな図 ----------
 
   // 新規訪問者の大分類（100% の帯）

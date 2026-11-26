@@ -1,3 +1,4 @@
 pandas>=2.0
 janome>=0.5
 cryptography>=41
+openpyxl>=3.1

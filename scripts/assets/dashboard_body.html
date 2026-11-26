@@ -2,21 +2,28 @@
   <nav class='sc-toc' id='toc' aria-label='目次'>
     <p class='sc-toc-h'>目次</p>
     <a class='lv1' href='#summary' data-jump='summary'>要点</a>
+    <a class='lv1' href='#journey' data-jump='journey'>体験の流れ（全体図）</a>
     <p class='sc-toc-part'>第1部　結果</p>
     <a class='lv1' href='#s1' data-jump='s1'><span class='sc-toc-n'>1</span>どこから来たか</a>
     <a class='lv2' href='#card-flow' data-jump='card-flow' data-sec='s1'>リンク元と最初のページ</a>
     <a class='lv2' href='#card-db' data-jump='card-db' data-sec='s1'>期間で変わった経路</a>
     <a class='lv1' href='#s2' data-jump='s2'><span class='sc-toc-n'>2</span>いつ来たか</a>
-    <a class='lv1' href='#s3' data-jump='s3'><span class='sc-toc-n'>3</span>登録と投稿</a>
-    <a class='lv2' href='#card-timeline' data-jump='card-timeline' data-sec='s3'>訪問・登録・投稿の日別</a>
-    <a class='lv2' href='#card-waffle' data-jump='card-waffle' data-sec='s3'>投稿した人</a>
-    <a class='lv2' href='#card-hour' data-jump='card-hour' data-sec='s3'>時刻とスポット</a>
-    <a class='lv1' href='#s4' data-jump='s4'><span class='sc-toc-n'>4</span>投稿の言葉</a>
-    <a class='lv2' href='#card-cooc' data-jump='card-cooc' data-sec='s4'>一緒に使われた言葉</a>
+    <a class='lv1' href='#s3' data-jump='s3'><span class='sc-toc-n'>3</span>どんな投稿があったか</a>
+    <a class='lv2' href='#card-themes' data-jump='card-themes' data-sec='s3'>投稿のテーマ</a>
+    <a class='lv2' href='#card-layers' data-jump='card-layers' data-sec='s3'>投稿から読み取った体験の流れ</a>
+    <a class='lv2' href='#card-quotes' data-jump='card-quotes' data-sec='s3'>テーマ別の一節</a>
+    <a class='lv1' href='#s4' data-jump='s4'><span class='sc-toc-n'>4</span>品川への気持ち</a>
+    <a class='lv2' href='#card-revisit' data-jump='card-revisit' data-sec='s4'>再訪意欲と効果</a>
+    <a class='lv2' href='#card-voice' data-jump='card-voice' data-sec='s4'>自由記述</a>
     <a class='lv1' href='#s5' data-jump='s5'><span class='sc-toc-n'>5</span>次回に向けて</a>
     <p class='sc-toc-part'>第2部　詳細データ</p>
     <a class='lv1' href='#s6' data-jump='s6'><span class='sc-toc-n'>6</span>流入経路の詳細</a>
-    <a class='lv1' href='#s7' data-jump='s7'><span class='sc-toc-n'>7</span>DROP の詳細</a>
+    <a class='lv1' href='#s7' data-jump='s7'><span class='sc-toc-n'>7</span>登録と投稿の詳細</a>
+    <a class='lv2' href='#card-timeline' data-jump='card-timeline' data-sec='s7'>訪問・登録・投稿の日別</a>
+    <a class='lv2' href='#card-waffle' data-jump='card-waffle' data-sec='s7'>投稿した人</a>
+    <a class='lv2' href='#card-hour' data-jump='card-hour' data-sec='s7'>時刻とスポット</a>
+    <a class='lv2' href='#card-words' data-jump='card-words' data-sec='s7'>言葉と共起</a>
+    <a class='lv2' href='#card-attr' data-jump='card-attr' data-sec='s7'>属性と登録時アンケート</a>
     <a class='lv1' href='#s8' data-jump='s8'><span class='sc-toc-n'>8</span>元データと集計</a>
     <a class='lv1' href='#defs' data-jump='defs'>データの扱いとことば</a>
   </nav>
@@ -26,10 +33,15 @@
     <p class='sc-badge'>流入・利用レポート｜11/25 版</p>
     <h1 class='sc-title'>品川国際映画祭2026 × みんまちDROP　流入・利用レポート</h1>
     <p class='sc-sub'>集計期間 2026年11月2日（月）〜14日（土）（告知期間 11/2〜11/8・開催期間 11/9〜11/14）｜みんまちDROP のデータ（11/25 取得）と、DROP サイトの GA（初回訪問＝新規訪問者）から｜運営メンバーは数に入れていません</p>
-    <p class='sc-lead' id='lead'>DROP サイトに新しく来た <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_users' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_cinema_pct' data-row='0' data-fmt='pct'>—</b> が、映画祭の告知から来ました。映画祭をきっかけに登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人は全員が開催期間に入ってからの登録で、うち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted' data-row='0' data-fmt='int'>—</b>人が投稿しました。</p>
+    <ul class='sc-lead' id='lead' aria-label='このレポートの結論'>
+      <li><b>来た</b><span>DROP サイトに新しく来た <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_users' data-row='0' data-fmt='int'>—</b>人の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_cinema_pct' data-row='0' data-fmt='pct'>—</b> が映画祭の告知から。二本柱は映画祭公式HPと社内イントラ。</span></li>
+      <li><b>参加した</b><span>映画祭をきっかけに登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人は全員が開催期間に入ってから。うち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted' data-row='0' data-fmt='int'>—</b>人が投稿。</span></li>
+      <li><b>品川への気持ち</b><span>投稿 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b>件中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b>件に品川への愛着が読み取れた（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人）。特典に応募した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人が「再訪意欲が高まった」。</span></li>
+      <li><b>課題</b><span>告知期間に <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_pre_users' data-row='0' data-fmt='int'>—</b>人が来たのに、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人。愛着の「関わり・発信」は投稿に出てこない。</span></li>
+    </ul>
     <p class='sc-legend' aria-label='色の見方'>
       <span><i class='sc-sw sw-hi'></i>その図で言いたいところ（図ごとに、図の上の色の見方で説明）</span>
-      <span><i class='sc-sw sw-hil'></i>映画祭の告知（現地・紙）</span>
+      <span><i class='sc-sw sw-hil'></i>言いたいところの補助（例：映画祭の告知の現地・紙、「やや」高まった）</span>
       <span><i class='sc-sw sw-gray'></i>くらべる相手・そのほか</span>
       <span><i class='sc-sw sw-more'></i><i class='sc-sw sw-less'></i>増えた・減った（良し悪しではない）</span>
       <span><i class='sc-sw sw-band'></i>開催期間</span>
@@ -76,25 +88,51 @@
         <span class='sc-mini dash-skeleton' data-draw='mini-reg' data-source='drop_daily'></span>
         <span class='sc-kcard-f'>告知期間の新規訪問 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_pre_users' data-row='0' data-fmt='int'>—</b>人に対し、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人</span>
       </a>
-      <a class='sc-kcard' href='#card-hour' data-go='card-hour' id='k-night'>
-        <span class='sc-kcard-t'>投稿は夜。言葉は「品川」「映画」</span>
-        <span class='sc-big'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_evening_pct' data-row='0' data-fmt='dec1'>—</b><small>%</small></span>
-        <span class='sc-kcard-s'>一般の投稿 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_general' data-row='0' data-fmt='int'>—</b>件のうち、17〜22時の投稿（時刻別）</span>
-        <span class='sc-mini dash-skeleton' data-draw='mini-hour' data-source='drop_hour'></span>
-        <span class='sc-kcard-f'>「品川」「映画」を使った人は、それぞれ <b class='dash-skeleton' data-draw='v' data-source='drop_words' data-field='people' data-where='word=品川' data-fmt='int'>—</b>人</span>
+      <a class='sc-kcard' href='#s3' data-go='s3' id='k-posts'>
+        <span class='sc-kcard-t'>投稿の半数近くに、品川への愛着が読み取れた</span>
+        <span class='sc-big'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b><em>/</em><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b><small>件</small></span>
+        <span class='sc-kcard-s'>一般の投稿を4層（コンテンツ → 関心 → 行動 → 愛着）で読み、品川への愛着の関心・意向が読み取れた投稿（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人）。タイプ別の件数</span>
+        <span class='sc-mini dash-skeleton' data-draw='mini-layers' data-source='kpi'></span>
+        <span class='sc-kcard-f'>「関わり・発信」は0件。「いつもの品川が違って見えた」と書いた人は <b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=everyday' data-fmt='int'>—</b>人</span>
       </a>
-      <a class='sc-kcard is-full' href='#s5' data-go='s5' id='k-data'>
-        <span class='sc-kcard-t'>データと DROP の改善点</span>
-        <span class='sc-kcard-s'>次回、効果を確かめやすくするために</span>
+      <a class='sc-kcard' href='#s4' data-go='s4' id='k-revisit'>
+        <span class='sc-kcard-t'>応募した人の9割が「品川にまた来たい」気持ちが高まった</span>
+        <span class='sc-big'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b><em>/</em><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b><small>人</small></span>
+        <span class='sc-kcard-s'>特典応募時アンケート「品川エリアへの再訪意欲が高まったか」に、とても・やや高まったと答えた人</span>
+        <span class='sc-mini dash-skeleton' data-draw='mini-revisit' data-source='app_survey'></span>
+        <span class='sc-kcard-f'>愛着そのものの設問はなく、再訪意欲で見ています</span>
+      </a>
+      <a class='sc-kcard' href='#s5' data-go='s5' id='k-data'>
+        <span class='sc-kcard-t'>次回に向けて：先にやる4つ</span>
+        <span class='sc-kcard-s'>効果が大きいと考える順（くわしくは 5）</span>
         <span class='sc-droplist'>
-          <span><i>1</i><span>一般の投稿の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_no_spot_pct' data-row='0' data-fmt='pct'>—</b> がスポット未選択で、会場ごとにくらべられない</span></span>
-          <span><i>2</i><span>GA は初回訪問の行だけで、経路ごとの登録率が出せない</span></span>
-          <span><i>3</i><span>11/12 の GA が0件（欠損の可能性）</span></span>
-          <span><i>4</i><span>品川への愛着は、応募時アンケートを足して見る</span></span>
+          <span><i>1</i><span>告知期間の訪問を登録につなげる（告知期間の訪問 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_pre_users' data-row='0' data-fmt='int'>—</b>人、登録 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人）</span></span>
+          <span><i>2</i><span>館内と帰り道の告知、社内告知を続ける（知った媒体の最多は社内告知）</span></span>
+          <span><i>3</i><span>投稿の写真を街で見せる・投稿し忘れを減らす</span></span>
+          <span><i>4</i><span>愛着の設問を登録時と応募時の両方に入れ、前後でくらべる</span></span>
         </span>
       </a>
     </div>
-    <p class='sc-sum-foot'>新規登録 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人・一般の投稿 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_general' data-row='0' data-fmt='int'>—</b>件と数が少ないので、割合は目安です。カードを押すと、その節へ移ります。</p>
+    <p class='sc-sum-foot'>時間がなければ、要点と次の「体験の流れ」で全体がわかります。新規登録 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人・一般の投稿 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_general' data-row='0' data-fmt='int'>—</b>件と数が少ないので、割合は目安です。カードを押すと、その節へ移ります。</p>
+  </section>
+
+  <section class='sc-sec' id='journey' aria-labelledby='jr-h'>
+    <h2 class='sc-h2' id='jr-h'><span>体験の流れ（全体図）：知った媒体 → 登録 → 投稿 → 品川への気持ち</span></h2>
+    <p class='sc-cap'>DROP サイトに来た新規訪問者は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_users' data-row='0' data-fmt='int'>—</b>人（GA）です。GA の訪問者は DROP の会員と結びつけられないので、ここでは会員データとアンケートで同じ人を追える範囲だけを見ます（参考：映画祭をきっかけにした登録は、訪問者100人あたり <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_per_visitor_pct' data-row='0' data-fmt='dec1'>—</b>人）。</p>
+    <div class='sc-card' id='card-funnel'>
+      <h3 class='sc-h3'>映画祭をきっかけに登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人のうち、投稿したのは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted' data-row='0' data-fmt='int'>—</b>人、特典に応募したのは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_reg_cinema' data-row='0' data-fmt='int'>—</b>人</h3>
+      <p class='sc-cap'>同じ人を順に追った人数です。下の段は、すぐ上の段の人のうちの人数。割合は登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人に対してです。</p>
+      <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>最後まで進み、再訪意欲が高まった人（この図で言いたいところ）</span><span><i style='background:#B9C4C9'></i>その手前の段</span></p>
+      <div class='sc-chart dash-skeleton' data-draw='reg-funnel' data-source='journey_paths'></div>
+    </div>
+    <div class='sc-card' id='card-journey'>
+      <h3 class='sc-h3'>再訪意欲が高まった <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_everyday_up' data-row='0' data-fmt='int'>—</b>人は「いつもの品川」を書いた人</h3>
+      <p class='sc-cap'>同じ人を追える <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='journey_people' data-row='0' data-fmt='int'>—</b>人（映画祭をきっかけに登録した人・一般の投稿をした人・特典応募時アンケートに答えた人。運営メンバーを除く）が、どの媒体で知り、どの経路で登録し、何を投稿し、品川への気持ちがどうなったかを、左から右へつなぎました。帯の太さ＝人数。以前からの会員や、別の入口から登録した人もふくみます。知った媒体のうち1人だけのもの（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='journey_media_merged' data-row='0'>—</b>）は、組み合わせで個人がわかりにくいよう「そのほかの媒体」にまとめました。</p>
+      <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>再訪意欲が高まった人の流れ（この図で言いたいところ。項目を押すと、そこを通った人の流れに切りかわります）</span><span><i style='background:#B9C4C9'></i>そのほかの人</span></p>
+      <div class='sc-chart sc-journey dash-skeleton' data-draw='journey' data-source='journey_paths'></div>
+      <p class='sc-scroll-hint'>← 図は横にスクロールできます →</p>
+      <p class='sc-note'>「知った媒体」と「品川への再訪意欲」は特典応募時アンケートの答えなので、応募していない人はわかりません。人数が少ないので、流れの太さは目安です。投稿の中身から読み取った流れ（コンテンツ → 最初の関心 → 行動 → 愛着の関心・意向）は <a href='#card-layers' data-go='card-layers'>3 にあります</a>。</p>
+    </div>
   </section>
 
   <p class='sc-part' id='part1'>第1部　結果</p>
@@ -106,6 +144,7 @@
       <h3 class='sc-h3'>リンク元 → 流入経路 → 最初に開いたページ</h3>
       <p class='sc-cap'>帯の太さ＝人数。左＝リンク元のサイト（QR コード・メール・社内イントラなどからは記録が残らない）、中＝識別タグで分けた流入経路、右＝最初に開いたページ。マゼンタ＝映画祭の告知（オンライン）、淡いマゼンタ＝映画祭の告知（現地・紙）、グレー＝それ以外。<b>項目を押すと、そこを通る流れだけを強くします</b></p>
       <div class='sc-chart sc-flow dash-skeleton' data-draw='flow' data-source='ga_flow'></div>
+      <p class='sc-scroll-hint'>← 図は横にスクロールできます →</p>
       <p class='sc-note'>検索から来た <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_search_users' data-row='0' data-fmt='int'>—</b>人の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_search_other_pct' data-row='0' data-fmt='pct'>—</b>（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_search_other_users' data-row='0' data-fmt='int'>—</b>人）は、富山など他イベントのページに着いています。映画祭のスポット・案内ページに着いた <b class='dash-skeleton' data-draw='v' data-source='ga_landing' data-field='users' data-where='landing=映画祭のスポット・案内ページ' data-fmt='int'>—</b>人は、<b class='dash-skeleton' data-draw='v' data-source='ga_landing' data-field='no_utm' data-where='landing=映画祭のスポット・案内ページ' data-fmt='int'>—</b>人が識別タグのない訪問（検索・直接など）でした。</p>
     </div>
     <div class='sc-card' id='card-db'>
@@ -137,71 +176,122 @@
   </section>
 
   <section class='sc-sec' id='s3' aria-labelledby='s3-h'>
-    <h2 class='sc-h2' id='s3-h'><span class='sc-secn'>3</span>登録と投稿：登録した人は全員が開催期間に。投稿は夜に集中</h2>
-    <div class='sc-opsbar'>
-      <label class='sc-ops'><input type='checkbox' class='sc-ops-in'><span>運営メンバーの投稿（<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_people' data-where='ops=all' data-fmt='int'>—</b>人・<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_posts' data-where='ops=all' data-fmt='int'>—</b>件）も含める</span></label>
-      <span class='sc-ops-now'>いまの表示：<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b></span>
-      <span class='sc-ops-note'>時刻・スポット・日別の投稿・言葉が切りかわります。参加者の行動を見るときは外した表示（一般の投稿）を使います。</span>
+    <h2 class='sc-h2' id='s3-h'><span class='sc-secn'>3</span><span>どんな投稿があったか：寒い夜の映画・光・音楽。<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b>件中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b>件に品川への愛着が読み取れた</span></h2>
+    <div class='sc-fact'><p><span class='sc-tag'>データで言えること</span>一般の投稿は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_general' data-row='0' data-fmt='int'>—</b>件・<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人です。DROP の投稿は、写真と5行の詩でできています。詩の本文を、テーマごとに決めた言葉が出てくるかで分けると、多いのは「寒さ・季節」（<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=season' data-fmt='int'>—</b>人）と「映画・スクリーン」（<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=movie' data-fmt='int'>—</b>人）で、「光・イルミネーション」（<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=light' data-fmt='int'>—</b>人）と「音楽・ステージ」（<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=music' data-fmt='int'>—</b>人）が続きます。<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人中 <b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=everyday' data-fmt='int'>—</b>人は、職場や帰り道など、ふだんの品川がこの期間は違って見えたことを書いていました。詩を4層（コンテンツ → 最初の関心 → 行動 → 愛着の関心・意向）で読むと、<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b>件中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b>件で品川への愛着の関心・意向が読み取れました（見方・気持ち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_view_posts' data-row='0' data-fmt='int'>—</b>件、再訪・滞在 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_revisit_posts' data-row='0' data-fmt='int'>—</b>件、関わり・発信 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_engage_posts' data-row='0' data-fmt='int'>—</b>件）。</p></div>
+    <div class='sc-stats' aria-label='投稿の数'>
+      <a class='sc-stat' href='#card-timeline' data-go='card-timeline'><span class='sc-stat-n'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_general' data-row='0' data-fmt='int'>—</b><small>件</small></span><span class='sc-stat-l'>一般の投稿（投稿できたのは開催期間の6日間）</span></a>
+      <a class='sc-stat' href='#card-waffle' data-go='card-waffle'><span class='sc-stat-n'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b><small>人</small></span><span class='sc-stat-l'>投稿した人。1人 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_per_poster' data-row='0' data-fmt='dec1'>—</b>件、多い人で <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_max_person' data-row='0' data-fmt='int'>—</b>件</span></a>
+      <a class='sc-stat' href='#card-waffle' data-go='card-waffle'><span class='sc-stat-n'><b class='dash-skeleton' data-draw='v' data-source='drop_poster_origin' data-field='people' data-where='origin=映画祭をきっかけに新規登録' data-fmt='int'>—</b><small>人</small></span><span class='sc-stat-l'>うち、映画祭をきっかけに DROP に登録した人</span></a>
+      <a class='sc-stat' href='#card-hour' data-go='card-hour'><span class='sc-stat-n'><b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_evening_pct' data-row='0' data-fmt='dec1'>—</b><small>%</small></span><span class='sc-stat-l'>夕方〜夜（17〜22時）の投稿</span></a>
     </div>
-    <div class='sc-fact'><p><span class='sc-tag'>データで言えること</span>映画祭をきっかけに DROP に登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人は、全員が開催期間（11/9〜）に入ってからの登録です。告知期間は投稿できない設定でしたが、登録はでき、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人でした。<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted' data-row='0' data-fmt='int'>—</b>人（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted_pct' data-row='0' data-fmt='pct'>—</b>）が投稿しています。<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>は <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posts' data-row='0' data-fmt='int'>—</b>件・<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posters' data-row='0' data-fmt='int'>—</b>人で、<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='evening_pct' data-row='0' data-fmt='pct'>—</b> が 17〜22時でした。</p></div>
-    <div class='sc-card' id='card-timeline'>
-      <h3 class='sc-h3'>告知期間は訪問だけ。登録と投稿は開催期間に入ってから</h3>
-      <p class='sc-cap'>同じ日付の軸に、GA の新規訪問者、DROP の新規登録（映画祭きっかけ）、投稿（上の切り替えに合わせて、一般のみ／運営を含む）を並べました。マゼンタ＝新規登録（この図で言いたいところ：告知期間も登録はできたのに 0人）、グレー＝訪問と投稿（くらべる相手。告知期間は投稿できない設定）。GA と DROP は同じ人を結びつけられないので、率ではなく日ごとの動きをくらべます。縦の目盛りは段ごとに違います。</p>
-      <div class='sc-chart is-tall dash-skeleton' data-draw='timeline' data-source='ga_daily drop_daily'></div>
+    <div class='sc-card' id='card-themes'>
+      <h3 class='sc-h3'>投稿のテーマ：「寒さ・季節」「映画」が多く、<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=everyday' data-fmt='int'>—</b>人が「いつもの品川」に触れた</h3>
+      <p class='sc-cap'>棒＝そのテーマを書いた人数（投稿した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人のうち。棒の長さは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人に対する割合）。右＝人数・投稿数。1つの投稿が複数のテーマに入ります。</p>
+      <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>いつもの品川が違って見えた（この図で言いたいところ：まちそのものについて書いたテーマ）</span><span><i style='background:#B9C4C9'></i>そのほかのテーマ</span></p>
+      <div class='sc-chart dash-skeleton' data-draw='post-themes' data-source='drop_theme'></div>
     </div>
-    <div class='sc-card' id='card-waffle'>
-      <h3 class='sc-h3'>投稿した <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posters' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='drop_poster_origin' data-field='people' data-where='origin=映画祭をきっかけに新規登録' data-fmt='int'>—</b>人は、映画祭をきっかけに登録した人</h3>
-      <p class='sc-cap'>登録の経路ごとの、投稿した人数と投稿数。マゼンタ＝映画祭をきっかけに新規登録した人。以前からの会員は1人 <b class='dash-skeleton' data-draw='v' data-source='drop_poster_origin' data-field='posts_per_person' data-where='origin=以前からの会員' data-fmt='dec1'>—</b>件とよく投稿しています。人数が少ないので、1人あたりの件数は目安です。運営の投稿を含めると、運営メンバーの行が加わります。</p>
-      <div class='sc-chart is-short dash-skeleton' data-draw='drop-origin' data-source='drop_poster_origin'></div>
+    <div class='sc-card' id='card-layers'>
+      <h3 class='sc-h3'>投稿から読み取った体験の流れ：<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b>件のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b>件で品川への愛着の関心・意向が読み取れた。映画の上映にふれた投稿では <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_movie_posts' data-row='0' data-fmt='int'>—</b>件中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_movie_attach' data-row='0' data-fmt='int'>—</b>件</h3>
+      <p class='sc-cap'>一般の投稿 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</b>件の詩を1件ずつ読み、次の4層に当てはめました。各層は、その投稿でいちばん中心に書かれたものを1つ選んでいます。帯の太さ＝投稿の件数。上の「投稿のテーマ」（決めた言葉が出るかで機械的に分け、1件が複数に入る・人数）とは数え方が違います。</p>
+      <ol class='sc-lydef' aria-label='4層の意味'>
+        <li><b>① コンテンツ</b><span>来場者が実際にふれた映画祭の企画（名詞）</span></li>
+        <li><b>② 最初の関心</b><span>ふれた直後に生まれる気持ち（〜たい）。「何に」は①から補う</span></li>
+        <li><b>③ 行動</b><span>関心を満たすためにしたこと（〜した）と、そのとき感じたこと</span></li>
+        <li><b>④ 愛着の関心・意向</b><span>体験のあとに続く、品川への気持ち（なる・変わる・〜たい）</span></li>
+      </ol>
+      <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>品川への愛着の関心・意向が読み取れた投稿の流れ（この図で言いたいところ。項目を押すと、そこを通った流れに切りかわります）</span><span><i style='background:#B9C4C9'></i>そのほかの投稿</span></p>
+      <div class='sc-chart sc-journey dash-skeleton' data-draw='post-layers' data-source='post_layers'></div>
+      <p class='sc-scroll-hint'>← 図は横にスクロールできます →</p>
+      <p class='sc-note'>④ のタイプ：見方・気持ち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_view_posts' data-row='0' data-fmt='int'>—</b>件（品川の見え方が変わる・好きになる）、再訪・滞在 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_revisit_posts' data-row='0' data-fmt='int'>—</b>件、関わり・発信 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_engage_posts' data-row='0' data-fmt='int'>—</b>件（読み取れる投稿はありませんでした）。④ が読み取れた <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_posts' data-row='0' data-fmt='int'>—</b>件は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人の投稿です。読み取りは決めた基準に沿って行い、② は書かれていないことが多いので ① と ③ から補っています（基準は「データの扱いとことば」）。同じ文の投稿が2件あり、そのまま2件と数えています。</p>
+      <p class='sc-lyex-t'>④ の読み取りの例（公開範囲が「全体」の一般の投稿から。アカウント名・日時は出していません）</p>
+      <div class='dash-skeleton' data-draw='layer-examples' data-source='layer_examples'></div>
     </div>
-    <div class='sc-grid2'>
-      <div class='sc-card' id='card-hour'>
-        <h3 class='sc-h3'>投稿の <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='evening_pct' data-row='0' data-fmt='pct'>—</b> は 17〜22時</h3>
-        <p class='sc-cap'><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>の時刻（0〜23時）。網かけ＝17〜22時。最多は 20時台の <b class='dash-skeleton' data-draw='v' data-source='hour_v' data-field='posts' data-where='hour=20' data-fmt='int'>—</b>件。</p>
-        <div class='sc-chart dash-skeleton' data-draw='drop-hour' data-source='drop_hour'></div>
-      </div>
-      <div class='sc-card' id='card-spot'>
-        <h3 class='sc-h3'>投稿の <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='no_spot_pct' data-row='0' data-fmt='pct'>—</b> は、スポットを選んでいない</h3>
-        <p class='sc-cap'><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b> <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posts' data-row='0' data-fmt='int'>—</b>件の、投稿時に選んだスポット。マゼンタ＝選んでいない投稿。運営メンバーはアプリに慣れていてスポットを選ぶことが多いので、含めると割合が下がります。</p>
-        <div class='sc-chart dash-skeleton' data-draw='donut-spot' data-source='drop_spot'></div>
-      </div>
+    <div class='sc-card' id='card-quotes'>
+      <h3 class='sc-h3'>テーマ別の一節：働く街・帰り道が、映画と光と音楽の場所に</h3>
+      <p class='sc-cap'>各テーマから、テーマがわかりやすい一節（5行の詩の一部）を選びました。公開範囲が「全体」の一般の投稿から選び、アカウント名・日時は出していません。左の線がマゼンタ＝この節で言いたいテーマ（いつもの品川が違って見えた）。</p>
+      <div class='sc-qwrap dash-skeleton' data-draw='post-quotes' data-source='drop_quotes'></div>
     </div>
-    <div class='sc-hyp'><p><span class='sc-tag'>次回に向けて</span>告知期間の訪問を登録につなげる：開催前に登録する理由（事前登録の特典、開催前に見られる内容など）を用意する。投稿画面でスポットを選びやすくすると、会場ごとに投稿をくらべられる。</p></div>
-    <p class='sc-caution'>読み方の注意：数が少ないので、割合は目安です。一般のいいねは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='likes_general' data-row='0' data-fmt='int'>—</b>件（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='likes_general_people' data-row='0' data-fmt='int'>—</b>人）だけでした。スタンプラリーのデータはありません。</p>
+    <div class='sc-hyp'><p><span class='sc-tag'>次回に向けて</span>来場者は「仕事帰り」「いつもの場所」の目線で書いている。告知も、職場から駅までの帰り道に合わせる（時間帯・掲示の場所）。</p></div>
+    <div class='sc-hyp'><p><span class='sc-tag'>次回に向けて</span>愛着の3つ目のタイプ「関わり・発信」は、投稿から読み取れなかった。投稿を館内で紹介する、人にすすめる・まちの活動に参加する入口を投稿のあとに置くなど、「関わる」きっかけをつくる。</p></div>
+    <p class='sc-caution'>読み方の注意：テーマは、詩の本文に決めた言葉が出てくるかで機械的に分けたものです（言葉の一覧は「データの扱いとことば」）。投稿した人が <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人と少ないので、人数は目安です。運営メンバーの投稿は入れていません（第2部 7 で、時刻・スポット・言葉を運営の投稿も含めて見られます）。</p>
   </section>
 
   <section class='sc-sec' id='s4' aria-labelledby='s4-h'>
-    <h2 class='sc-h2' id='s4-h'><span class='sc-secn'>4</span>投稿の言葉：「まち」「映画祭」「イルミネーション」の3つ</h2>
-    <div class='sc-opsbar'>
-      <label class='sc-ops'><input type='checkbox' class='sc-ops-in'><span>運営メンバーの投稿（<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_people' data-where='ops=all' data-fmt='int'>—</b>人・<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_posts' data-where='ops=all' data-fmt='int'>—</b>件）も含める</span></label>
-      <span class='sc-ops-now'>いまの表示：<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b></span>
-      <span class='sc-ops-note'>時刻・スポット・日別の投稿・言葉が切りかわります。参加者の行動を見るときは外した表示（一般の投稿）を使います。</span>
+    <h2 class='sc-h2' id='s4-h'><span class='sc-secn'>4</span><span>品川への気持ち：応募した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人が「品川にまた来たい気持ちが高まった」</span></h2>
+    <div class='sc-fact'><p><span class='sc-tag'>データで言えること</span>特典に応募するときのアンケート（運営メンバーを除く <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人）で、「投稿コンテストを通じ、品川エリアへの再訪意欲が高まりましたか」に <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人が「とても高まった」「やや高まった」と答えました（とても高まった <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_very' data-row='0' data-fmt='int'>—</b>人）。参加して得られた効果は「街やセントラルガーデンの魅力を発見できた」が <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_effect_hi' data-row='0' data-fmt='int'>—</b>人でいちばん多く、映画祭そのものの体験満足度も <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_satisfaction_hi' data-row='0' data-fmt='int'>—</b>人が「高まった」「やや高まった」でした。3 で「いつもの品川が違って見えた」と書いた <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_everyday_n' data-row='0' data-fmt='int'>—</b>人は全員がこのアンケートに答え、<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_everyday_up' data-row='0' data-fmt='int'>—</b>人が「再訪意欲が高まった」と答えています。</p></div>
+    <div class='sc-grid2'>
+      <div class='sc-card' id='card-revisit'>
+        <h3 class='sc-h3'>品川エリアへの再訪意欲：<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人が「高まった」</h3>
+        <p class='sc-cap'>「投稿コンテストを通じ、品川エリアへの再訪意欲が高まりましたか」の答え（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人）。答えのなかった選択肢も 0人で並べています。</p>
+        <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>とても高まった</span><span><i style='background:#E7A3CF'></i>やや高まった（この図で言いたいところ：高まった人）</span><span><i style='background:#B9C4C9'></i>そのほか</span></p>
+        <div class='sc-chart dash-skeleton' data-draw='app-bars' data-q='revisit' data-source='app_survey'></div>
+      </div>
+      <div class='sc-card' id='card-effect'>
+        <h3 class='sc-h3'>参加して得られた効果：<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_effect_hi' data-row='0' data-fmt='int'>—</b>人が「街やセントラルガーデンの魅力を発見できた」</h3>
+        <p class='sc-cap'>「本サービスの利用（投稿コンテスト参加）後、どのような効果が得られましたか」（1つ選ぶ）。マゼンタ＝街の魅力を発見できた（この図で言いたいところ）、グレー＝そのほか。</p>
+        <div class='sc-chart dash-skeleton' data-draw='app-bars' data-q='effect' data-lw='16em' data-source='app_survey'></div>
+      </div>
     </div>
-    <div class='sc-fact'><p><span class='sc-tag'>データで言えること</span><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>の5行の詩から言葉（名詞）を取り出し、使った人数を数えました（同じ人は何度使っても1人）。「品川」と「映画」がそれぞれ <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=品川' data-fmt='int'>—</b>人（投稿した人の <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='share_pct' data-where='word=品川' data-fmt='pct'>—</b>）、「イルミネーション」が <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=イルミネーション' data-fmt='int'>—</b>人、「街」が <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=街' data-fmt='int'>—</b>人です。</p></div>
-    <div class='sc-card' id='card-words'>
-      <h3 class='sc-h3'>言葉のまとまりごとの、使った人数</h3>
-      <p class='sc-cap'>文字の大きさと右の数字＝使った人数（3人以上の言葉）。まとまりは言葉の意味で分けたもの。マゼンタの枠＝まとまりの中でいちばん多い言葉。</p>
-      <div class='sc-chart is-short dash-skeleton' data-draw='words-themes' data-source='drop_words'></div>
+    <div class='sc-card' id='card-cross'>
+      <h3 class='sc-h3'>投稿から愛着が読み取れた <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_up' data-row='0' data-fmt='int'>—</b>人が、アンケートでも「再訪意欲が高まった」</h3>
+      <p class='sc-cap'>投稿した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_people' data-row='0' data-fmt='int'>—</b>人を、3 の4層の読み取りで「④ 愛着の関心・意向」が読み取れたかどうかに分け、特典応募時アンケートの再訪意欲を重ねました（同じ人どうし）。棒の長さ＝人数。</p>
+      <p class='sc-key' aria-hidden='true'><span><i style='background:#BE258D'></i>とても高まった</span><span><i style='background:#E7A3CF'></i>やや高まった（この図で言いたいところ：高まった人）</span><span><i style='background:#D3DADD'></i>応募していない（アンケートの答えなし）</span></p>
+      <div class='sc-chart sc-short dash-skeleton' data-draw='attach-cross' data-source='attach_cross'></div>
+      <p class='sc-note'>読み取れなかった <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_noattach_people' data-row='0' data-fmt='int'>—</b>人でも、応募した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_noattach_applied' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_noattach_up' data-row='0' data-fmt='int'>—</b>人が「高まった」と答えています。アンケートはほぼ全員が「高まった」と答えるので人による違いが出にくいのに対し、投稿の読み取りは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_people' data-row='0' data-fmt='int'>—</b>人中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人と分かれます。愛着の目的変数には、投稿の読み取り（あり・なし）を組み合わせるのが有効です（人数が少ないので傾向として）。</p>
     </div>
-    <div class='sc-card' id='card-cooc'>
-      <h3 class='sc-h3'>「品川」は「映画」「街」と一緒に書かれた（共起ネットワーク）</h3>
-      <p class='sc-cap'>線＝同じ投稿に一緒に出た言葉の組み合わせ（2人以上が一緒に使ったもの）。線の太さ＝その組み合わせを使った人数、円の大きさ＝その言葉を使った人数（2人以上が使った言葉）。マゼンタ＝選んだ言葉（はじめは「品川」）と、一緒に使われた言葉へのつながり。<b>丸を押すと切りかわります</b></p>
-      <div class='sc-chart is-tall dash-skeleton' data-draw='drop-cooc' data-source='drop_cooc'></div>
-      <p class='sc-note'>「品川」と「映画」、「品川」と「街」は、それぞれ <b class='dash-skeleton' data-draw='v' data-source='cooc_v' data-field='people' data-where='type=edge&amp;source=品川&amp;target=映画' data-fmt='int'>—</b>人、<b class='dash-skeleton' data-draw='v' data-source='cooc_v' data-field='people' data-where='type=edge&amp;source=品川&amp;target=街' data-fmt='int'>—</b>人が同じ投稿で一緒に使っていました。まちの名前が、映画やまちの風景と一緒に書かれています。線は「一緒に出た」ことを表し、どちらが原因かは表しません。運営の投稿を含めると、複数の運営アカウントが同じ文面を投稿した分（「新幹線」「空港」「フレーズ」など）も線になります。</p>
+    <div class='sc-grid2'>
+      <div class='sc-card' id='card-satisfaction'>
+        <h3 class='sc-h3'>映画祭の体験満足度：<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_satisfaction_hi' data-row='0' data-fmt='int'>—</b>人が「高まった」</h3>
+        <p class='sc-cap'>「投稿キャンペーン体験を通じ、品川国際映画祭自体の体験満足度が高まりましたか」の答え。マゼンタ（濃い）＝高まった、（淡い）＝やや高まった、グレー＝そのほか。</p>
+        <div class='sc-chart dash-skeleton' data-draw='app-bars' data-q='satisfaction' data-source='app_survey'></div>
+      </div>
+      <div class='sc-card' id='card-nps'>
+        <h3 class='sc-h3'>親しい人へのおすすめ度：平均 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_nps_mean' data-row='0' data-fmt='dec1'>—</b>点、9〜10点は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_nps_hi' data-row='0' data-fmt='int'>—</b>人</h3>
+        <p class='sc-cap'>0（全く思わない）〜10（非常にそう思う）。棒の上の数字＝人数。マゼンタ＝9・10 をつけた人（この図で言いたいところ）、グレー＝そのほか。</p>
+        <div class='sc-chart dash-skeleton' data-draw='app-nps' data-source='app_survey'></div>
+      </div>
     </div>
-    <div class='sc-hyp'><p><span class='sc-tag'>次回に向けて</span>「品川」「街」を書いた人は、まちへの関心が投稿に出ている人。応募時アンケートの愛着の設問と、投稿に地名を書いたかを、同じ人で並べてみる。</p></div>
+    <div class='sc-grid2'>
+      <div class='sc-card' id='card-media'>
+        <h3 class='sc-h3'>投稿コンテストを知った媒体：社内告知とフライヤーが多い</h3>
+        <p class='sc-cap'>1つ選ぶ。「その他」は自由回答（職員や友人からの紹介、口コミ）。社内告知が多いのは、1 の流入経路で社内イントラが多いのと同じ傾向です。</p>
+        <div class='sc-chart dash-skeleton' data-draw='app-bars' data-q='media' data-lw='16em' data-source='app_survey'></div>
+      </div>
+      <div class='sc-card' id='card-with'>
+        <h3 class='sc-h3'>一緒に利用した人：半数は一人で</h3>
+        <p class='sc-cap'>「このサービスをどなたと一緒に利用されましたか」の答え。</p>
+        <div class='sc-chart dash-skeleton' data-draw='app-bars' data-q='with' data-source='app_survey'></div>
+      </div>
+    </div>
+    <div class='sc-card' id='card-voice'>
+      <h3 class='sc-h3'>自由記述（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_comments' data-row='0' data-fmt='int'>—</b>件）の要約</h3>
+      <ul class='sc-list'>
+        <li>平日の夜を豊かに過ごせた。以前この辺りで働いていたのに、こうした催しや館内の施設の多さに気づいていなかった</li>
+        <li>投稿を意識すると、その場の良いところを探しながら歩くようになった</li>
+        <li>映画だけでなく、にぎわいも含めていろいろな見方で会場を回るきっかけになった。いっぽう、撮っただけで投稿し忘れたものも多かった</li>
+        <li>ほかの人の投稿写真が面白い。館内のデジタルサイネージなどで、街に来た人にも見せる機会があるとよい</li>
+        <li>登録の手順が手軽だった</li>
+      </ul>
+      <p class='sc-note'>文面はそのまま載せず、要約しています。</p>
+    </div>
+    <div class='sc-hyp'><p><span class='sc-tag'>次回に向けて</span>今回の設問は「再訪意欲が高まったか」で、愛着そのものではない。登録時と応募時の両方に同じ愛着の設問（とても感じる〜まったく感じない）を入れると、参加の前と後で「上がったか」を同じ人でくらべられる。</p></div>
+    <p class='sc-caution'>読み方の注意：答えたのは、投稿して特典に応募した人です（運営メンバーを除く <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人。うち一般の投稿をした人は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_posted' data-row='0' data-fmt='int'>—</b>人で、投稿した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posters_general' data-row='0' data-fmt='int'>—</b>人の一部）。積極的に参加した人の声で、来場者全体ではありません。「高まったか」は本人の振り返りで、参加前との比較ではありません。</p>
   </section>
 
   <section class='sc-sec' id='s5' aria-labelledby='s5-h'>
     <h2 class='sc-h2' id='s5-h'><span class='sc-secn'>5</span>次回に向けて</h2>
+    <p class='sc-cap'>効果が大きいと考える順に並べました。左のタグ＝どこの仕事か（告知・登録・投稿体験・計測）、右の枠＝いつまでに準備するか（開催前・開催中）。</p>
     <div class='sc-next'>
-      <div class='sc-hyp'><p><b>会場での告知を厚くする</b>：開催期間は現地の QR からの訪問が伸び、登録も開催期間に起きている。投稿の多い夕方〜夜の動線に掲示を寄せる。<a href='#card-db' data-go='card-db'>1 を見る</a></p></div>
-      <div class='sc-hyp'><p><b>告知期間の訪問を登録につなげる</b>：告知期間の新規訪問 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_pre_users' data-row='0' data-fmt='int'>—</b>人に対し、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人。開催前に登録する理由（事前登録の特典など）を用意する。<a href='#card-timeline' data-go='card-timeline'>3 を見る</a></p></div>
-      <div class='sc-hyp'><p><b>検索で映画祭のページが見つかるようにする</b>：検索から来た人の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_search_other_pct' data-row='0' data-fmt='pct'>—</b> は、他イベントのページに着いた。<a href='#card-flow' data-go='card-flow'>1 を見る</a></p></div>
-      <div class='sc-hyp'><p><b>投稿時にスポットを選びやすくする</b>：一般の投稿の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_no_spot_pct' data-row='0' data-fmt='pct'>—</b> がスポット未選択で、会場ごとにくらべられない。<a href='#card-spot' data-go='card-spot'>3 を見る</a></p></div>
-      <div class='sc-hyp'><p><b>配信日・掲示を始めた日を記録する</b>：どの告知が山をつくったかを、日別に確かめられる。<a href='#s2' data-go='s2'>2 を見る</a></p></div>
-      <div class='sc-hyp'><p><b>経路の評価に必要なデータを出してもらう</b>：GA を「1人1行」（最初の流入経路・再訪・登録完了・投稿の有無）で出してもらうと、経路ごとの登録率が出せる。<a href='#defs' data-go='defs'>定義を見る</a></p></div>
-      <div class='sc-hyp'><p><b>応募時アンケートで、品川への愛着と結びつける</b>：愛着の設問と、登録の経路・投稿の有無・投稿の言葉を、同じ人で並べる。<a href='#s4' data-go='s4'>4 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>登録</span><b>告知期間の訪問を登録につなげる</b><span class='sc-ttag'>開催前</span>：告知期間の新規訪問 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_pre_users' data-row='0' data-fmt='int'>—</b>人に対し、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人。開催前に登録する理由（事前登録の特典など）を用意する。<a href='#card-timeline' data-go='card-timeline'>7 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>告知</span><b>館内と帰り道の告知、社内告知を続ける</b><span class='sc-ttag'>開催前〜開催中</span>：開催期間は現地の QR からの訪問が伸び、登録も開催期間に起きている。投稿には「仕事帰り・帰り道」が出ていて（<b class='dash-skeleton' data-draw='v' data-source='drop_theme' data-field='people' data-where='theme=work' data-fmt='int'>—</b>人）、登録した人の勤め先は品川インターシティB棟が最多（<b class='dash-skeleton' data-draw='v' data-source='survey_codes' data-field='n' data-where='question=Q2&amp;code=2' data-fmt='int'>—</b>人）、知った媒体の最多は社内告知（<b class='dash-skeleton' data-draw='v' data-source='app_survey' data-field='n' data-where='q=media&amp;option=社内告知' data-fmt='int'>—</b>人）。夕方〜夜の、オフィスから駅までの動線と館内に掲示を寄せ、社内告知も続ける。<a href='#card-db' data-go='card-db'>1 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>告知</span><b>検索で映画祭のページが見つかるようにする</b><span class='sc-ttag'>開催前</span>：検索から来た人の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ga_search_other_pct' data-row='0' data-fmt='pct'>—</b> は、他イベントのページに着いた。<a href='#card-flow' data-go='card-flow'>1 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>投稿体験</span><b>投稿の写真を街で見せる</b><span class='sc-ttag'>開催中</span>：自由記述に「ほかの人の投稿写真が面白い。館内のサイネージなどで見せてほしい」という声。投稿が街の人の目にふれると、投稿する理由にもなる。<a href='#card-voice' data-go='card-voice'>4 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>投稿体験</span><b>撮った写真の投稿し忘れを減らす</b><span class='sc-ttag'>開催中</span>：「撮っただけで投稿し忘れた」という声。帰り道や翌朝に、撮った写真を投稿できることを知らせる。<a href='#card-voice' data-go='card-voice'>4 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>投稿体験</span><b>投稿のあとに「関わる」入口を置く</b><span class='sc-ttag'>開催前</span>：投稿から読み取れた愛着は「見方・気持ち」<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_view_posts' data-row='0' data-fmt='int'>—</b>件と「再訪・滞在」<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_revisit_posts' data-row='0' data-fmt='int'>—</b>件で、「関わり・発信」は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_engage_posts' data-row='0' data-fmt='int'>—</b>件。投稿したあとに、人にすすめる・まちの活動を知る・次回の手伝いに申し込むなどの入口を置き、3つ目のタイプを生む。<a href='#card-layers' data-go='card-layers'>3 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>投稿体験</span><b>投稿時にスポットを選びやすくする</b><span class='sc-ttag'>開催前</span>：一般の投稿の <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='posts_no_spot_pct' data-row='0' data-fmt='pct'>—</b> がスポット未選択で、会場ごとにくらべられない。<a href='#card-spot' data-go='card-spot'>7 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>計測</span><b>愛着を参加の前後でたずねる</b><span class='sc-ttag'>開催前</span>：今回の応募時アンケートは「再訪意欲が高まったか」（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人中 <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_revisit_hi' data-row='0' data-fmt='int'>—</b>人が高まった）。登録時と応募時に同じ愛着の設問を入れると、「上がったか」を同じ人でくらべられる。<a href='#s4' data-go='s4'>4 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>計測</span><b>配信日・掲示を始めた日を記録する</b><span class='sc-ttag'>開催前〜開催中</span>：どの告知が山をつくったかを、日別に確かめられる。<a href='#s2' data-go='s2'>2 を見る</a></p></div>
+      <div class='sc-hyp'><p><span class='sc-ntag'>計測</span><b>経路の評価に必要なデータを出してもらう</b><span class='sc-ttag'>開催前</span>：GA を「1人1行」（最初の流入経路・再訪・登録完了・投稿の有無）で出してもらうと、経路ごとの登録率が出せる。<a href='#defs' data-go='defs'>定義を見る</a></p></div>
     </div>
   </section>
 
@@ -264,7 +354,46 @@
   </section>
 
   <section class='sc-sec' id='s7' aria-labelledby='s7-h'>
-    <h2 class='sc-h2' id='s7-h'><span class='sc-secn'>7</span>DROP の詳細</h2>
+    <h2 class='sc-h2' id='s7-h'><span class='sc-secn'>7</span>登録と投稿の詳細</h2>
+    <div class='sc-opsbar'>
+      <label class='sc-ops'><input type='checkbox' class='sc-ops-in'><span>運営メンバーの投稿（<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_people' data-where='ops=all' data-fmt='int'>—</b>人・<b class='dash-skeleton' data-draw='v' data-source='drop_posts' data-field='op_posts' data-where='ops=all' data-fmt='int'>—</b>件）も含める</span></label>
+      <span class='sc-ops-now'>いまの表示：<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b></span>
+      <span class='sc-ops-note'>時刻・スポット・日別の投稿・言葉が切りかわります。参加者の行動を見るときは外した表示（一般の投稿）を使います。</span>
+    </div>
+    <div class='sc-fact'><p><span class='sc-tag'>データで言えること</span>映画祭をきっかけに DROP に登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人は、全員が開催期間（11/9〜）に入ってからの登録です。告知期間は投稿できない設定でしたが、登録はでき、その期間の登録は <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_pre' data-row='0' data-fmt='int'>—</b>人でした。<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted' data-row='0' data-fmt='int'>—</b>人（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_posted_pct' data-row='0' data-fmt='pct'>—</b>）が投稿しています。<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>は <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posts' data-row='0' data-fmt='int'>—</b>件・<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posters' data-row='0' data-fmt='int'>—</b>人で、<b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='evening_pct' data-row='0' data-fmt='pct'>—</b> が 17〜22時でした。</p></div>
+    <div class='sc-card' id='card-timeline'>
+      <h3 class='sc-h3'>告知期間は訪問だけ。登録と投稿は開催期間に入ってから</h3>
+      <p class='sc-cap'>同じ日付の軸に、GA の新規訪問者、DROP の新規登録（映画祭きっかけ）、投稿（上の切り替えに合わせて、一般のみ／運営を含む）を並べました。マゼンタ＝新規登録（この図で言いたいところ：告知期間も登録はできたのに 0人）、グレー＝訪問と投稿（くらべる相手。告知期間は投稿できない設定）。GA と DROP は同じ人を結びつけられないので、率ではなく日ごとの動きをくらべます。縦の目盛りは段ごとに違います。</p>
+      <div class='sc-chart is-tall dash-skeleton' data-draw='timeline' data-source='ga_daily drop_daily'></div>
+    </div>
+    <div class='sc-card' id='card-waffle'>
+      <h3 class='sc-h3'>投稿した <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posters' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='drop_poster_origin' data-field='people' data-where='origin=映画祭をきっかけに新規登録' data-fmt='int'>—</b>人は、映画祭をきっかけに登録した人</h3>
+      <p class='sc-cap'>登録の経路ごとの、投稿した人数と投稿数。マゼンタ＝映画祭をきっかけに新規登録した人。以前からの会員は1人 <b class='dash-skeleton' data-draw='v' data-source='drop_poster_origin' data-field='posts_per_person' data-where='origin=以前からの会員' data-fmt='dec1'>—</b>件とよく投稿しています。人数が少ないので、1人あたりの件数は目安です。運営の投稿を含めると、運営メンバーの行が加わります。</p>
+      <div class='sc-chart is-short dash-skeleton' data-draw='drop-origin' data-source='drop_poster_origin'></div>
+    </div>
+    <div class='sc-grid2'>
+      <div class='sc-card' id='card-hour'>
+        <h3 class='sc-h3'>投稿の <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='evening_pct' data-row='0' data-fmt='pct'>—</b> は 17〜22時</h3>
+        <p class='sc-cap'><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>の時刻（0〜23時）。網かけ＝17〜22時。最多は 20時台の <b class='dash-skeleton' data-draw='v' data-source='hour_v' data-field='posts' data-where='hour=20' data-fmt='int'>—</b>件。</p>
+        <div class='sc-chart dash-skeleton' data-draw='drop-hour' data-source='drop_hour'></div>
+      </div>
+      <div class='sc-card' id='card-spot'>
+        <h3 class='sc-h3'>投稿の <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='no_spot_pct' data-row='0' data-fmt='pct'>—</b> は、スポットを選んでいない</h3>
+        <p class='sc-cap'><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b> <b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='posts' data-row='0' data-fmt='int'>—</b>件の、投稿時に選んだスポット。マゼンタ＝選んでいない投稿。運営メンバーはアプリに慣れていてスポットを選ぶことが多いので、含めると割合が下がります。</p>
+        <div class='sc-chart dash-skeleton' data-draw='donut-spot' data-source='drop_spot'></div>
+      </div>
+    </div>
+    <div class='sc-card' id='card-words'>
+      <h3 class='sc-h3'>投稿の言葉：「品川」「映画」をそれぞれ <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=品川' data-fmt='int'>—</b>人が使った</h3>
+      <p class='sc-cap'><b class='dash-skeleton' data-draw='v' data-source='posts_v' data-field='label' data-row='0'>—</b>の5行の詩から言葉（名詞）を取り出し、使った人数を数えました（同じ人は何度使っても1人。3人以上の言葉）。文字の大きさと右の数字＝使った人数。まとまりは言葉の意味で分けたもの。マゼンタの枠＝まとまりの中でいちばん多い言葉。「品川」は投稿した人の <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='share_pct' data-where='word=品川' data-fmt='pct'>—</b>、「イルミネーション」は <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=イルミネーション' data-fmt='int'>—</b>人、「街」は <b class='dash-skeleton' data-draw='v' data-source='words_v' data-field='people' data-where='word=街' data-fmt='int'>—</b>人。</p>
+      <div class='sc-chart is-short dash-skeleton' data-draw='words-themes' data-source='drop_words'></div>
+    </div>
+    <div class='sc-card' id='card-cooc'>
+      <h3 class='sc-h3'>「品川」は「映画」「街」と一緒に書かれた（共起ネットワーク）</h3>
+      <p class='sc-cap'>線＝同じ投稿に一緒に出た言葉の組み合わせ（2人以上が一緒に使ったもの）。線の太さ＝その組み合わせを使った人数、円の大きさ＝その言葉を使った人数（2人以上が使った言葉）。マゼンタ＝選んだ言葉（はじめは「品川」）と、一緒に使われた言葉へのつながり。<b>丸を押すと切りかわります</b></p>
+      <div class='sc-chart is-tall dash-skeleton' data-draw='drop-cooc' data-source='drop_cooc'></div>
+      <p class='sc-note'>「品川」と「映画」、「品川」と「街」は、それぞれ <b class='dash-skeleton' data-draw='v' data-source='cooc_v' data-field='people' data-where='type=edge&amp;source=品川&amp;target=映画' data-fmt='int'>—</b>人、<b class='dash-skeleton' data-draw='v' data-source='cooc_v' data-field='people' data-where='type=edge&amp;source=品川&amp;target=街' data-fmt='int'>—</b>人が同じ投稿で一緒に使っていました。まちの名前が、映画やまちの風景と一緒に書かれています。線は「一緒に出た」ことを表し、どちらが原因かは表しません。運営の投稿を含めると、複数の運営アカウントが同じ文面を投稿した分（「新幹線」「空港」「フレーズ」など）も線になります。</p>
+    </div>
     <div class='sc-grid2'>
       <div class='sc-card' id='card-spot-detail'>
         <h3 class='sc-h3'>スポット別の投稿：選ぶなら MAIN THEATER（一般の投稿 <b class='dash-skeleton' data-draw='v' data-source='drop_spot' data-field='general' data-where='spot=MAIN THEATER' data-fmt='int'>—</b>件）</h3>
@@ -282,13 +411,14 @@
       </div>
     </div>
     <div class='sc-card' id='card-survey'>
-      <h3 class='sc-h3'>登録時アンケート（選択肢の番号のまま）</h3>
-      <p class='sc-cap'>映画祭をきっかけに登録した人の回答（Q1・Q2）。横＝選択肢の番号、棒の上の数字＝人数。設問票が届いたら選択肢の名前に置き換えます。応募時アンケートは後から足します。</p>
+      <h3 class='sc-h3'>登録時アンケート：住まいと勤め先（映画祭をきっかけに登録した <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='reg_cinema' data-row='0' data-fmt='int'>—</b>人）</h3>
+      <p class='sc-cap'>会員登録のときにたずねた「どちらにお住まいですか」（Q1）と「どちらにお勤めですか」（Q2）。答えのあった選択肢だけを並べています。勤め先は、品川インターシティB棟が <b class='dash-skeleton' data-draw='v' data-source='survey_codes' data-field='n' data-where='question=Q2&amp;code=2' data-fmt='int'>—</b>人でいちばん多い。</p>
       <div class='sc-two'>
-        <div><p class='sc-subh'>Q1</p><div class='sc-chart dash-skeleton' data-draw='survey' data-q='Q1' data-source='survey_codes'></div></div>
-        <div><p class='sc-subh'>Q2</p><div class='sc-chart dash-skeleton' data-draw='survey' data-q='Q2' data-source='survey_codes'></div></div>
+        <div><p class='sc-subh'>Q1 住まい</p><div class='sc-chart dash-skeleton' data-draw='survey' data-q='Q1' data-source='survey_codes'></div></div>
+        <div><p class='sc-subh'>Q2 勤め先</p><div class='sc-chart dash-skeleton' data-draw='survey' data-q='Q2' data-source='survey_codes'></div></div>
       </div>
     </div>
+    <p class='sc-caution'>読み方の注意：数が少ないので、割合は目安です。一般のいいねは <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='likes_general' data-row='0' data-fmt='int'>—</b>件（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='likes_general_people' data-row='0' data-fmt='int'>—</b>人）だけでした。スタンプラリーのデータはありません。</p>
   </section>
 
   <section class='sc-sec' id='s8' aria-labelledby='s8-h'>
@@ -321,10 +451,10 @@
     <summary>データの扱いとことば（集計の定義と、愛着分析に向けたメモ）</summary>
     <h4>共通</h4>
     <ul>
-      <li>元データ：json-shinagawa-cinema-2026-20261125.zip（mart_ga・mart_action_drop・mart_user・mart_user_allevent・mart_inspiration・int_event_master・stg_user_persona_note_expanded）。</li>
+      <li>元データ：json-shinagawa-cinema-2026-20261125.zip（mart_ga・mart_action_drop・mart_user・mart_user_allevent・mart_inspiration・int_event_master・stg_user_persona_note_expanded）と、アンケート分析用ファイル（品川国際映画祭_アンケート分析用_20261125、個人情報削除済み）。</li>
       <li>集計期間 2026/11/2〜11/14（DROP の公開期間）。告知期間＝11/2〜11/8、開催期間＝11/9〜11/14。運営メンバー（is_operation_member＝TRUE）は除外。</li>
       <li>告知期間は DROP に投稿できない設定です（登録はできる）。</li>
-      <li>図の元データは、上の zip を Python（scripts/drop_aggregate.py）で集計した表です。集計表は「8. 元データと集計」から CSV でダウンロードできます。</li>
+      <li>図の元データは、上の zip を Python で集計した表です。集計表は「8. 元データと集計」から CSV でダウンロードできます（集計の手順は scripts/drop_aggregate.py）。</li>
     </ul>
     <h4>GA の流入経路の分け方</h4>
     <ul>
@@ -344,16 +474,42 @@
       <li>いいね数は mart_inspiration から運営のいいねを除いて作成。閲覧数は GA に作品 ID（click_artwork_id）がないため作れません。</li>
       <li>言葉は形態素解析（janome）で名詞を取り出し、その言葉を使った人数（同じ人は1人）で数えました。「品川国際映画祭」などの固有名詞はひとかたまりで数え、品川を含むものは「品川」にも数えています。</li>
       <li>言葉のまとまりは、言葉の意味で分けたもの：まち・場所（品川・街・ビル）、映画祭（映画・品川国際映画祭・音楽・ステージ・演奏）、冬の夜（イルミネーション）。</li>
+      <li>投稿のテーマ：5行の詩の本文に、テーマごとに決めた言葉が出てくるかで分けました。1つの投稿が複数のテーマに入ることがあります。「映画祭」という言葉は「映画・スクリーン」に数えていません。各テーマの言葉は次のとおりです。
+        <ul class='dash-skeleton' data-draw='theme-defs' data-source='drop_theme'></ul>
+      </li>
+      <li>テーマ別の一節：一般の投稿のうち、公開範囲が「全体」の投稿から、テーマがわかりやすい行を選びました（選んだ投稿と行は、集計スクリプトの外のファイルに記録）。アカウント名・日時は出していません。</li>
       <li>共起ネットワーク：2人以上が使った言葉のうち、同じ投稿に一緒に出た組み合わせを、一緒に使った人数で数えました（同じ人は1人。2人以上の組み合わせだけ）。</li>
       <li>告知の種類：配信＝その日に届く告知（社内イントラ・LINE・DROP リテンションメール）、常設のリンク＝いつでも見られる場所のリンク（映画祭公式HP・PC画面の左側表示）、会場の QR＝ポスター・フライヤー・会場スクリーン。</li>
       <li>年代は人数が少なく個人が特定されやすいため、50代以上をまとめています。</li>
     </ul>
+    <h4>投稿の4層の読み取り方（3 の体験の流れ）</h4>
+    <ul>
+      <li>一般の投稿 <span class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_posts' data-row='0' data-fmt='int'>—</span>件の詩を1件ずつ読み、ノード定義（時点・対象・語尾・入れる条件）に沿って4層に当てはめました。各層は、その投稿でいちばん中心に書かれたもの1つ。当てはまらないときは「読み取れない」。読み取りの結果は、集計スクリプトの外のファイルに投稿ごとに記録しています。</li>
+      <li>① コンテンツ：映画祭を構成する、来場者が実際にふれる企画の要素（名詞）。映画の上映・ステージの音楽・イルミネーション・会場のテント・フード・ドリンク。紅葉・寒さ・夕焼けなどの環境や、人の状況は入れません。映画祭全体や季節の話だけの投稿は「特定の企画にふれていない」。</li>
+      <li>② 最初の関心：コンテンツにふれた直後に生まれる気持ち（〜たい）。「何に」は ① からの帯で補い、ノードは「どうしたい」だけにしました（観たい・聴きたい／のぞいてみたい／眺めていたい・撮りたい／温まりたい・味わいたい）。行動のあとの気持ちや、街そのものへの気持ちは入れません。投稿に書かれていないことが多いので、① と ③ から補って読んでいます。</li>
+      <li>③ 行動：関心を満たすためにしたこと（〜した）。（ ）はそのとき感じたことで、図には、その行動でいちばん多く書かれたものを出しています（同数なら2つまで）。感じたことは、投稿の表現を近い言葉（心地よい・あたたかい・楽しい・わくわく・特別・きれい・癒される）にそろえました。投稿には必ず写真があるので、景色や光だけを書いた投稿は「眺めた・撮った」。「〜したい」（意向）は入れません。</li>
+      <li>④ 愛着の関心・意向：体験のあとに続く、品川（街・エリア・関わり方）への気持ち。「なる・変わる・感じる・思う・〜たい」で言い切れるもの。タイプは、見方・気持ち（品川の見え方が変わる・品川が好きになる）、再訪・滞在（また来たい・もっと居たい。「今年も来た」「毎年恒例」もここ）、関わり・発信（関わりたい・人に伝えたい）。映画祭そのものへの感想だけのものは入れません。</li>
+    </ul>
+    <h4>ほかのイベントで同じ見方をするとき</h4>
+    <ul>
+      <li>そのまま使えるもの：じょうご（そのイベントをきっかけに登録した人を、投稿 → 応募 → 再訪意欲まで順に追う）、体験の流れ（知った媒体 → 登録の経路 → 投稿 → 再訪意欲）、投稿の4層の基準（時点・対象・語尾・入れる条件）。</li>
+      <li>イベントごとに決めるもの：① コンテンツのノード（そのイベントの企画の名前）、知った媒体の選択肢、告知期間と開催期間、運営メンバーの範囲。</li>
+      <li>同じ基準で読み取れば、④ 愛着の関心・意向が読み取れた投稿の割合を、イベントどうしでくらべられます。</li>
+    </ul>
+    <h4>アンケート</h4>
+    <ul>
+      <li>登録時アンケート：映画祭をきっかけに登録した人が会員登録のときに答える（Q1 住まい・Q2 勤め先）。選択肢の名前はアンケート分析用ファイルの設問マスターから。</li>
+      <li>特典応募時アンケート：投稿して特典に応募した人が答える（<b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n_all' data-row='0' data-fmt='int'>—</b>人。うち運営メンバー <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_operation' data-row='0' data-fmt='int'>—</b>人を除いた <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人で集計）。知った媒体・得られた効果・品川エリアへの再訪意欲・映画祭の体験満足度・おすすめ度（0〜10）・一緒に利用した人・自由記述。</li>
+      <li>知った媒体の「その他（紹介・口コミなど）」は、選択肢にない自由回答をまとめたもの。</li>
+      <li>自由記述は、個人が特定されないよう要約して載せています。</li>
+    </ul>
     <h4>「品川への愛着」を目的変数にする分析に向けて</h4>
     <ul>
-      <li>登録時アンケート（映画祭は Q1・Q2）には、愛着をたずねる設問が見当たりません。応募時アンケートを後から足して、愛着の設問を使う予定です。</li>
+      <li>今回のアンケートには、愛着そのもの（とても感じる〜まったく感じない）をたずねる設問がありません。いちばん近いのは特典応募時の「品川エリアへの再訪意欲が高まったか」（本人の振り返り）です。</li>
       <li>GA の user_pseudo_id と DROP の account_id はほぼ結びつかない（今回の GA で account_id 付きの行は3件）ため、1人ごとの説明変数は DROP 側の行動が中心になります。</li>
-      <li>使えそうな説明変数（1人1行）：登録の経路（映画祭で新規／期間中に別の入口／以前からの会員）、投稿数、投稿した時間帯、スポットを選んだか、投稿に「品川」などの地名を含むか、いいねした・された数、年代・性別。</li>
-      <li>GA の流入経路は1人ごとには結びつけられないため、「どの経路から来た人が多いイベントだったか」というイベント単位の説明に使います。</li>
+      <li>使えそうな説明変数（1人1行）：登録の経路（映画祭で新規／期間中に別の入口／以前からの会員）、投稿数、投稿のテーマ（「いつもの品川」など）、投稿した時間帯、スポットを選んだか、知った媒体、一緒に利用した人、住まい・勤め先、年代・性別。</li>
+      <li>投稿から読み取った ④ 愛着の関心・意向（あり・なし、タイプ）は、アンケートに答えていない人にも使える、愛着の目安になります。今回、読み取れた <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_people' data-row='0' data-fmt='int'>—</b>人のうち <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='ly_attach_up' data-row='0' data-fmt='int'>—</b>人がアンケートでも再訪意欲が高まっていましたが、読み取れなかった人も応募した人は「高まった」と答えていて、アンケートだけでは差が出ません（4 の重ねたカード）。目的変数に使うときは、別の人がもう一度読んで読み取りが一致するかを確かめてからにします。</li>
+      <li>応募した人が <b class='dash-skeleton' data-draw='v' data-source='kpi' data-field='app_n' data-row='0' data-fmt='int'>—</b>人と少ないので、今回は傾向を見る程度にとどめます。次回、登録時と応募時に同じ愛着の設問を入れると、前後の変化を目的変数にできます。</li>
     </ul>
   </details>
   <p class='sc-foot' data-draw='footer'>品川国際映画祭2026 × みんまちDROP 流入・利用レポート</p>

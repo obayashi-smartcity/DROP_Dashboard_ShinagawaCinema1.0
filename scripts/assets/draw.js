@@ -309,21 +309,18 @@
     SC.hbars(el, items, { labelWidth: '15em', valW: '5em' });
   });
 
-  // 登録時アンケート（番号のまま）：縦の棒
+  // 登録時アンケート：選択肢ごとの人数（答えた選択肢だけ）
   dash.draw('survey', (el) => {
     const res = SC.ready(el, ['survey_codes']);
     if (!res) return;
     const q = el.dataset.q;
-    const rows = res[0].filter((r) => r.question === q);
-    SC.vbars(el, {
-      rows,
-      height: 150,
-      aria: `登録時アンケート ${q} の選択肢番号ごとの人数`,
-      noYAxis: true,
-      x: (r) => String(r.code),
-      every: 1,
-      series: [{ key: 'n', color: C.grayMid }],
-      tip: (r) => [`${q} ${r.label}`, `${r.n}人`],
-    });
+    const rows = res[0].filter((r) => r.question === q && +r.n > 0).sort((x, y) => +x.code - +y.code);
+    const n = d3.sum(rows, (r) => +r.n);
+    SC.hbars(el, rows.map((r) => ({
+      label: r.label,
+      segs: [{ v: +r.n, color: C.grayDark }],
+      valueText: `${r.n}人`,
+      tip: [`${r.question_label || q}：${r.label}`, `${r.n}人（${n}人のうち）`],
+    })), { labelWidth: '15em', valW: '3.5em', max: d3.max(rows, (r) => +r.n) || 1 });
   });
 })();

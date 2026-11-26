@@ -62,7 +62,9 @@
 /* 要点のカード */
 .sc-sum{margin:0 0 6px}
 .sc-sum-h{font-size:14px;font-weight:700;color:var(--sc-struct);margin:0 0 8px}
-.sc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}
+.sc-cards{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:600px){.sc-cards{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1180px){.sc-cards{grid-template-columns:repeat(4,1fr)}}
 .sc-kcard{display:flex;flex-direction:column;gap:4px;background:var(--color-panel);border:1px solid var(--color-border-line);border-top:3px solid var(--sc-struct);border-radius:var(--cds-radius,10px);padding:12px 14px;color:var(--color-fg);text-decoration:none;min-width:0}
 .sc-kcard:hover{border-color:var(--sc-struct2)}
 .sc-kcard-t{font-size:14.5px;font-weight:700;color:var(--sc-struct);line-height:1.4}
@@ -338,3 +340,71 @@ line.sc-gridline{stroke:var(--cds-chart-grid)}
   .sc-cards{grid-template-columns:repeat(3,1fr)}
   .sc-card,.sc-kcard,.sc-next .sc-hyp{break-inside:avoid}
 }
+
+/* 3. どんな投稿があったか */
+.sc-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px;margin:0 0 12px}
+.sc-stat{display:flex;flex-direction:column;gap:2px;background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius,10px);padding:10px 12px;color:inherit;text-decoration:none}
+a.sc-stat:hover{border-color:var(--sc-struct)}
+.sc-stat-n{font-weight:600;font-size:24px;line-height:1.15;font-variant-numeric:tabular-nums}
+.sc-stat-n small{font-size:13px;font-weight:600;margin-left:2px;color:var(--color-fg-muted)}
+.sc-stat-l{font-size:12px;color:var(--color-fg-muted);line-height:1.45}
+.sc-hb-row.is-hi .sc-hb-label{font-weight:700}
+.sc-qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px}
+.sc-qcard{border:1px solid var(--color-border-line);border-left:4px solid var(--sc-gray);border-radius:6px;padding:10px 12px;background:var(--color-panel)}
+.sc-qcard.is-hi{border-left-color:var(--sc-hi);grid-column:1/-1}
+.sc-qcard-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin:0 0 6px !important;font-size:12.5px}
+.sc-qcard-h span{color:var(--color-fg-muted);white-space:nowrap}
+.sc-qcard.is-hi .sc-qcard-h b{color:var(--sc-hi)}
+.sc-quote{margin:6px 0 0;padding:0 0 0 10px;border-left:2px solid var(--sc-gray-l);white-space:pre-line;font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Noto Serif CJK JP",serif;font-size:14px;line-height:1.75}
+.sc-qcard.is-hi .sc-quote{display:inline-block;vertical-align:top;margin-right:18px;min-width:min(100%,230px)}
+.sc-list{margin:6px 0 0;padding-left:1.3em;line-height:1.75;font-size:var(--cds-font-size-body,14px)}
+.sc-list li{margin:2px 0}
+.sc-wait{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--sc-struct);color:var(--sc-struct);margin-left:6px;vertical-align:2px}
+
+/* 体験の流れ */
+.sc-journey{min-height:380px}
+.sc-jr-sub{font-size:11px;fill:var(--color-fg-muted)}
+.sc-jr-link{fill:var(--sc-gray);opacity:.45}
+.sc-jr-link.is-on{fill:var(--sc-hi);opacity:.6}
+.sc-fl-node.is-sel{fill:var(--sc-hi)}
+.sc-jr-now{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-fg-muted);margin:6px 0 0 !important}
+.sc-jr-now i{display:inline-block;width:14px;height:8px;border-radius:2px;background:var(--sc-hi);opacity:.7}
+.sc-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:14px;margin:4px 0 10px;padding:0;list-style:none}
+.sc-steps li{display:flex;flex-direction:column;gap:1px;padding:6px 10px;border:1px solid var(--color-border-line);border-radius:6px;background:var(--color-panel);position:relative}
+.sc-steps li > b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.sc-steps li > b small{font-size:12px;color:var(--color-fg-muted);margin-left:1px}
+.sc-steps li span{font-size:11.5px;color:var(--color-fg-muted);line-height:1.35}
+.sc-steps li.is-ga{border-style:dashed}
+.sc-steps li.is-hi{border-color:var(--sc-hi)}
+.sc-steps li.is-hi > b{color:var(--sc-hi)}
+.sc-steps li span b{font-size:inherit;font-weight:700;color:var(--color-fg)}
+.sc-steps li:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--color-fg-muted)}
+.sc-ntag{display:inline-block;font-size:11px;font-weight:700;padding:0 7px;margin-right:6px;border-radius:999px;background:var(--color-panel);border:1px solid var(--sc-hyp-bd);color:var(--sc-ink2);vertical-align:1px}
+.sc-scroll-hint{display:none;font-size:11.5px;color:var(--color-fg-muted);text-align:center;margin:4px 0 0 !important}
+@media (max-width:760px){.sc-scroll-hint{display:block}}
+@media (max-width:600px){.sc-steps li::after{display:none}.sc-steps{gap:6px}}
+.sc.sc-dark .sc-jr-link{fill:#5B6770;opacity:.6}
+.sc.sc-dark .sc-jr-link.is-on{fill:var(--sc-hi);opacity:.85}
+/* 4層の意味 */
+.sc-lydef{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:6px 0 10px;padding:0;list-style:none}
+.sc-lydef li{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-left:3px solid var(--sc-gray);background:var(--color-panel);border-radius:0 6px 6px 0}
+.sc-lydef li b{font-size:12.5px;font-weight:700}
+.sc-lydef li span{font-size:11.5px;color:var(--color-fg-muted);line-height:1.4}
+.sc-lydef li:last-child{border-left-color:var(--sc-hi)}
+@media (max-width:1100px){.sc-lydef{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 次回に向けて：いつまでに準備するか */
+.sc-ttag{display:inline-block;font-size:10.5px;font-weight:600;padding:0 6px;margin-left:6px;border-radius:4px;border:1px dashed var(--sc-hyp-bd);color:var(--color-fg-muted);vertical-align:1px;white-space:nowrap}
+.sc-chart.sc-short{min-height:0}
+/* 4 の読み取りの例 */
+.sc-lyex-t{font-size:12px;font-weight:700;color:var(--color-fg-muted);margin:14px 0 4px !important}
+.sc-lyex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sc-lyex-i{padding:8px 12px;border:1px solid var(--color-border-line);border-left:3px solid var(--sc-hi);border-radius:0 6px 6px 0}
+.sc-lyex-h{display:flex;justify-content:space-between;gap:8px;margin:0 !important;font-size:12.5px}
+.sc-lyex-h span{font-size:11px;color:var(--color-fg-muted)}
+.sc-lyex .sc-quote{font-size:13.5px}
+@media (max-width:900px){.sc-lyex{grid-template-columns:1fr}}
+/* 結論（リード）を4つの短い文に */
+ul.sc-lead{list-style:none;font-size:15px;font-weight:500;line-height:1.6}
+ul.sc-lead li{display:grid;grid-template-columns:7em 1fr;gap:10px;margin:3px 0}
+ul.sc-lead li b{font-weight:700;color:var(--sc-struct)}
+@media (max-width:600px){ul.sc-lead li{grid-template-columns:1fr;gap:0;margin:6px 0}}

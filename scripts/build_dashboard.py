@@ -16,7 +16,7 @@ ASSETS = os.path.join(HERE, "assets")
 OUTPUT = os.path.join(ROOT, "ShinagawaCinema2026_DROP_Dashboard.html")
 ITERATIONS = 600_000
 LOG = os.path.join(ROOT, "update_log.txt")
-REQUIRED = ["pandas", "janome", "cryptography"]   # import 名と pip のパッケージ名が同じもの
+REQUIRED = ["pandas", "janome", "cryptography", "openpyxl"]   # import 名と pip のパッケージ名が同じもの
 
 
 class Tee:
@@ -69,28 +69,35 @@ INPUT_FILES = {
 
 # 集計表ごとの「使っている図」と「元データの列」（番号はページの節）
 SOURCES = {
-    "kpi": ("主要な数字", "要点・各節の見出しと説明文の数字", "mart_ga（user_pseudo_id・campaign・utm_source・page_referrer ほか）、mart_action_drop（account_id・post_dated_at・event_id・word1〜5）、mart_user（account_id）、mart_inspiration（inspiration_id）"),
+    "kpi": ("主要な数字", "要点・各節の見出しと説明文の数字", "mart_ga（user_pseudo_id・campaign・utm_source・page_referrer ほか）、mart_action_drop（account_id・post_dated_at・event_id・image_file_path）、mart_user（account_id）、mart_inspiration（inspiration_id）"),
     "ga_group": ("流入の大分類", "要点（新規訪問者の内訳）、1. の説明文", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer"),
     "ga_channel": ("流入経路別", "要点、1. 期間で変わった経路、2. 経路ごとの日別、6. 流入経路の一覧", "mart_ga：campaign・utm_source・medium・source・page_location・page_referrer・event_date_jp"),
     "ga_flow": ("リンク元 × 流入経路 × 最初のページ", "要点（検索から来た人）、1. リンク元と最初のページ（流れ図）", "mart_ga：page_referrer（ドメイン）・campaign・utm_source・page_location"),
     "ga_site": ("参照元サイト別", "6. 参照元サイト", "mart_ga：page_referrer（ドメイン）・page_location"),
-    "ga_daily": ("日別の新規訪問者", "2. 日別の新規訪問者（告知の種類別）、3. 訪問・登録・投稿の日別", "mart_ga：event_date_jp・campaign・utm_source"),
+    "ga_daily": ("日別の新規訪問者", "2. 日別の新規訪問者（告知の種類別）、7. 訪問・登録・投稿の日別", "mart_ga：event_date_jp・campaign・utm_source"),
     "ga_daily_channel": ("流入経路 × 日別", "2. 経路ごとの日別、6. 経路ごとの日別", "mart_ga：event_date_jp と流入経路"),
-    "ga_landing": ("最初に開いたページ", "1. の説明文", "mart_ga：page_location"),
-    "drop_daily": ("日別の投稿と新規登録", "要点（新規登録）、3. 訪問・登録・投稿の日別", "mart_action_drop：post_dated_at・is_operation_member、mart_user：created_at"),
-    "drop_posts": ("投稿の要約（一般のみ／運営を含む）", "3.・4. の見出しと説明文（切り替えで変わる数字）", "mart_action_drop：account_id・post_dated_at・event_id・is_operation_member"),
-    "drop_poster_origin": ("投稿した人の登録の経路", "3. 投稿した人（一般の投稿）", "mart_action_drop：account_id、mart_user_allevent：inflow_event_id・created_at"),
-    "drop_poster_origin_all": ("投稿した人の登録の経路（運営を含む）", "3. 投稿した人（運営の投稿を含めたとき）", "mart_action_drop：account_id・is_operation_member、mart_user_allevent：inflow_event_id・created_at"),
-    "drop_spot": ("スポット別の投稿", "3. スポット（ドーナツ）、7. スポット別の投稿", "mart_action_drop：event_id、int_event_master：event_id・event_name"),
-    "drop_hour": ("投稿の時刻", "要点（夜の投稿）、3. 投稿の時刻（一般の投稿）", "mart_action_drop：post_dated_at"),
-    "drop_hour_all": ("投稿の時刻（運営を含む）", "3. 投稿の時刻（運営の投稿を含めたとき）", "mart_action_drop：post_dated_at・is_operation_member"),
-    "drop_words": ("投稿に出てくる言葉", "4. 投稿の言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（名詞を取り出し、使った人数で数える）"),
-    "drop_words_all": ("投稿に出てくる言葉（運営を含む）", "4. 投稿の言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
-    "drop_cooc": ("一緒に使われた言葉", "4. 一緒に使われた言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（同じ投稿に出た言葉の組を、使った人数で数える）"),
-    "drop_cooc_all": ("一緒に使われた言葉（運営を含む）", "4. 一緒に使われた言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
+    "ga_landing": ("最初に開いたページ", "1. の説明文、6. 着地ページ", "mart_ga：page_location"),
+    "drop_theme": ("投稿のテーマ", "要点（投稿のテーマ）、3. 投稿のテーマ", "mart_action_drop：sentence・account_id（テーマごとに決めた言葉が出てくるかで分ける）"),
+    "drop_quotes": ("テーマ別の一節", "3. テーマ別の一節", "mart_action_drop：word1〜word5・open_range（公開範囲が全体の一般の投稿から選んだ行。アカウント名・日時なし）"),
+    "drop_daily": ("日別の投稿と新規登録", "要点（新規登録）、7. 訪問・登録・投稿の日別", "mart_action_drop：post_dated_at・is_operation_member、mart_user：created_at"),
+    "drop_posts": ("投稿の要約（一般のみ／運営を含む）", "7. の見出しと説明文（切り替えで変わる数字）", "mart_action_drop：account_id・post_dated_at・event_id・is_operation_member"),
+    "drop_poster_origin": ("投稿した人の登録の経路", "3. 投稿の数、7. 投稿した人（一般の投稿）", "mart_action_drop：account_id、mart_user_allevent：inflow_event_id・created_at"),
+    "drop_poster_origin_all": ("投稿した人の登録の経路（運営を含む）", "7. 投稿した人（運営の投稿を含めたとき）", "mart_action_drop：account_id・is_operation_member、mart_user_allevent：inflow_event_id・created_at"),
+    "drop_spot": ("スポット別の投稿", "7. スポット（ドーナツ）・スポット別の投稿", "mart_action_drop：event_id、int_event_master：event_id・event_name"),
+    "drop_hour": ("投稿の時刻", "7. 投稿の時刻（一般の投稿）", "mart_action_drop：post_dated_at"),
+    "drop_hour_all": ("投稿の時刻（運営を含む）", "7. 投稿の時刻（運営の投稿を含めたとき）", "mart_action_drop：post_dated_at・is_operation_member"),
+    "drop_words": ("投稿に出てくる言葉", "7. 投稿の言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（名詞を取り出し、使った人数で数える）"),
+    "drop_words_all": ("投稿に出てくる言葉（運営を含む）", "7. 投稿の言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
+    "drop_cooc": ("一緒に使われた言葉", "7. 一緒に使われた言葉（一般の投稿）", "mart_action_drop：word1〜word5・account_id（同じ投稿に出た言葉の組を、使った人数で数える）"),
+    "drop_cooc_all": ("一緒に使われた言葉（運営を含む）", "7. 一緒に使われた言葉（運営の投稿を含めたとき）", "mart_action_drop：word1〜word5・account_id・is_operation_member"),
     "drop_age": ("年代", "7. 投稿した人・新規登録者の属性", "mart_user_allevent：age_group（50代以上はまとめる）"),
     "drop_gender": ("性別", "7. 投稿した人・新規登録者の属性", "mart_user_allevent：gender"),
-    "survey_codes": ("登録時アンケート", "7. 登録時アンケート", "stg_user_persona_note_expanded：questionnaire_q1・q2"),
+    "survey_codes": ("登録時アンケート（住まい・勤め先）", "7. 登録時アンケート", "stg_user_persona_note_expanded：questionnaire_q1・q2、アンケート分析用 xlsx：設問マスター（選択肢の名前）"),
+    "post_layers": ("投稿から読み取った体験の流れ（4層）", "3. 投稿から読み取った体験の流れ", "mart_action_drop：sentence（一般の投稿）と raw/post_layers.json（投稿ごとの4層の読み取り）。コンテンツ・最初の関心・行動・感じたこと・愛着の関心・意向の組み合わせごとの件数と人数だけで、本文・ID は入れない"),
+    "attach_cross": ("投稿の読み取り × アンケート（同じ人）", "4. 投稿の読み取りとアンケートを重ねたカード", "raw/post_layers.json（④ が読み取れたか）と、アンケート分析用 xlsx（特典応募時の再訪意欲）を、投稿した人ごとに重ねた人数。ID は入れない"),
+    "layer_examples": ("④ の読み取りの例", "3. 投稿から読み取った体験の流れ", "mart_action_drop：word1〜word5・open_range（公開範囲が全体の一般の投稿から選んだ行。アカウント名・日時なし）"),
+    "journey_paths": ("体験の流れ（同じ人を追える人の道すじ）", "体験の流れ（全体図）", "mart_user・mart_user_allevent（登録の経路）、mart_action_drop（投稿・テーマ）、アンケート分析用 xlsx（知った媒体・再訪意欲）。道すじごとの人数だけで、個人の ID は入れない"),
+    "app_survey": ("特典応募時アンケート", "要点（再訪意欲）、4. 品川への気持ち", "アンケート分析用 xlsx：カンマ区切り（特典応募時の回答。運営メンバーを除く。自由記述は入れない）"),
 }
 
 
@@ -173,6 +180,35 @@ def load_site_names():
         return json.load(f)
 
 
+def find_survey():
+    """raw フォルダのアンケート分析用 xlsx（いちばん新しいもの）。なければ None。"""
+    xs = sorted(glob.glob(os.path.join(RAW, "*アンケート*.xlsx")), key=os.path.getmtime)
+    if not xs:
+        print("（raw にアンケート分析用 xlsx がないので、アンケートの図は空になります）")
+        return None
+    return xs[-1]
+
+
+def load_quote_picks():
+    """テーマ別の一節に使う投稿と行（artwork_id と行番号）。raw フォルダに置くので GitHub には上がらない。"""
+    path = os.path.join(RAW, "quote_picks.json")
+    if not os.path.exists(path):
+        print("（raw/quote_picks.json がないので、テーマ別の一節は空になります）")
+        return []
+    with open(path, encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def load_post_layers():
+    """投稿ごとの4層（コンテンツ・最初の関心・行動・愛着の関心・意向）の読み取り結果。raw フォルダに置くので GitHub には上がらない。"""
+    path = os.path.join(RAW, "post_layers.json")
+    if not os.path.exists(path):
+        print("（raw/post_layers.json がないので、投稿から読み取った体験の流れは空になります）")
+        return {}
+    with open(path, encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
 def main():
     ensure_packages()
     sys.path.insert(0, HERE)
@@ -180,8 +216,18 @@ def main():
     import drop_aggregate as agg  # noqa: E402
     src, label = find_input()
     print(f"元データ：{label}")
-    results, _ = agg.build(src, load_site_names())
+    survey = find_survey()
+    results, _ = agg.build(src, load_site_names(), load_quote_picks(), survey, load_post_layers())
     inputs = describe_inputs(src)
+    if survey:
+        raw = open(survey, "rb").read()
+        inputs.append({"file": os.path.basename(survey), "about": "アンケート分析用（会員登録時・特典応募時。個人情報削除済み）",
+                       "records": None, "sha256_12": hashlib.sha256(raw).hexdigest()[:12]})
+    lp = os.path.join(RAW, "post_layers.json")
+    if os.path.exists(lp):
+        raw = open(lp, "rb").read()
+        inputs.append({"file": "post_layers.json", "about": "投稿ごとの4層の読み取り（raw に置く。GitHub には上げない）",
+                       "records": len(json.loads(raw.decode("utf-8-sig")).get("posts", [])), "sha256_12": hashlib.sha256(raw).hexdigest()[:12]})
     results["_inputs"] = inputs
     results["_sources"] = [
         {"table": k, "title": t, "used_in": u, "columns": c, "rows": len(results.get(k, []))}

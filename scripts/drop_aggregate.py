@@ -1,6 +1,9 @@
 # 品川国際映画祭2026 × みんまちDROP：ダッシュボード用の集計
-# build(src_dir, extra_sites) が、図の元になる集計表（dict: 表名 -> rows）と、その元テーブル名を返す。
+# build(src_dir, extra_sites, quote_picks, survey_xlsx, post_layers) が、図の元になる集計表（dict: 表名 -> rows）と、その元テーブル名を返す。
 #   extra_sites：参照元ドメイン → 表示名の追加分（公開したくない社内サイトなど。raw/site_names.json から渡す）
+#   quote_picks：テーマ別の一節に使う投稿と行（raw/quote_picks.json から渡す）
+#   survey_xlsx：アンケート分析用 xlsx（会員登録時・特典応募時。個人情報削除済み。raw に置く）
+#   post_layers：投稿の4層（コンテンツ・最初の関心・行動・愛着の関心・意向）の読み取り結果（raw/post_layers.json から渡す）
 # 直接実行した場合は out/data/*.json に書き出す：python drop_aggregate.py <jsonフォルダ> <出力フォルダ>
 import json, os, re, sys
 from collections import Counter
@@ -10,7 +13,7 @@ EVENT = "shinagawa-cinema-2026"
 START, END = "2026-11-02", "2026-11-14"       # 集計期間（DROP公開＝スタンプ期間 11/2〜11/14）
 EVENT_START = "2026-11-09"                    # 映画祭の開催開始日（11/9〜11/14）
 
-def build(SRC, extra_sites=None):
+def build(SRC, extra_sites=None, quote_picks=None, survey_xlsx=None, post_layers=None):
     RESULTS, INPUTS = {}, {}
 
     def load(name):
@@ -414,16 +417,234 @@ def build(SRC, extra_sites=None):
     save("drop_words_all", wd_all, ["mart_action_drop.json（word1〜word5、運営メンバーの投稿を含む）"])
     save("drop_cooc_all", co_all, ["mart_action_drop.json（word1〜word5、運営メンバーの投稿を含む）"])
 
-    # 登録時アンケート（映画祭：q1・q2、番号のまま）
+    # 投稿のテーマ（一般の投稿）：本文（sentence）に決めた言葉が出てくるかで分ける。1つの投稿が複数のテーマに入ることがある
+    POST_THEMES = [  # (キー, 表示名, 言葉)
+        ("everyday", "いつもの品川が違って見えた", ["いつもの", "いつもは", "いつもと", "通い慣れた", "違和感", "新しい景色", "はじめまして", "非日常", "普通と違う", "街になる"]),
+        ("season", "寒さ・季節", ["寒", "冷え", "紅葉", "秋", "冬", "季節", "サンタ", "暖か", "あったか", "温ま"]),
+        ("movie", "映画・スクリーン", ["映画", "スクリーン", "ムービー", "シネマ", "作品", "上映"]),
+        ("light", "光・イルミネーション", ["イルミネーション", "光", "ひかり", "灯り", "明かり", "あかり", "ライトアップ", "キラキラ", "ギラギラ", "きらめき", "ピカピカ", "夕焼け", "照ら", "てらす", "眩い"]),
+        ("music", "音楽・ステージ", ["音楽", "ミュージック", "ライブ", "ステージ", "歌声", "ゴスペル", "演奏", "吹奏楽", "レゲエ", "リハーサル", "バイオリン", "ギター", "楽曲", "音色", "コンサート"]),
+        ("people", "人・にぎわい", ["人が", "人々", "友人", "友達", "同僚", "子供", "老若男女", "誰か", "オーディエンス", "拍手", "足を止める", "集まって"]),
+        ("food", "食べもの・飲みもの", ["ビール", "フード", "ドリンク", "カレー", "飲", "食", "おむすび", "ミネストローネ", "ワイン", "チキン", "お酒", "ピザ"]),
+        ("work", "仕事帰り・帰り道", ["仕事", "しごと", "退勤", "働く", "帰り道", "帰りみち"]),
+        ("repeat", "毎年の楽しみ・また来た", ["今年も", "毎年", "恒例", "風物詩", "待ってました", "も来ました"]),
+    ]
+    FEST_NAME = re.compile(r"品川国際映画祭|映画祭")
+    def post_themes(sentence):
+        t = str(sentence or "")
+        out = []
+        for key, _, words in POST_THEMES:
+            text = FEST_NAME.sub("", t) if key == "movie" else t   # 「映画祭」は映画のテーマに数えない
+            if any(w in text for w in words):
+                out.append(key)
+        return out
+    gen["themes"] = gen["sentence"].map(post_themes)
+    n_posters = gen["account_id"].nunique()
+    th = []
+    for order, (key, label, words) in enumerate(POST_THEMES):
+        m = gen["themes"].map(lambda x, k=key: k in x)
+        th.append({"theme": key, "label": label, "order": order, "people": int(gen.loc[m, "account_id"].nunique()),
+                   "posts": int(m.sum()), "share_pct": round(gen.loc[m, "account_id"].nunique() / n_posters * 100, 1),
+                   "highlight": key == "everyday", "words": "・".join(words)})
+    th = pd.DataFrame(th).sort_values(["people", "posts", "order"], ascending=[False, False, True]).reset_index(drop=True)
+    th["rank"] = range(1, len(th) + 1)
+    save("drop_theme", th, ["mart_action_drop.json（sentence）"])
+
+    # テーマごとの代表的な一節。選んだ投稿と行は raw/quote_picks.json（コードの外。GitHub には上げない）に書く
+    # 使うのは一般の投稿で、公開範囲が全体（open_range=1）のものだけ。アカウント名・日時は出さない
+    PICKS = list(quote_picks or [])
+    label_of = {k: l for k, l, _ in POST_THEMES}
+    order_of = {k: i for i, (k, _, _) in enumerate(POST_THEMES)}
+    qt = []
+    for p in PICKS:
+        r = gen[(gen["artwork_id"] == p["artwork_id"]) & (gen["open_range"].astype(str) == "1")]
+        if r.empty or p["theme"] not in label_of:
+            continue
+        r = r.iloc[0]
+        lines = [str(r[f"word{i}"]).strip() for i in p["lines"] if pd.notna(r[f"word{i}"]) and str(r[f"word{i}"]).strip()]
+        if lines:
+            qt.append({"theme": p["theme"], "label": label_of[p["theme"]], "order": order_of[p["theme"]], "text": "\n".join(lines)})
+    qt = pd.DataFrame(qt, columns=["theme", "label", "order", "text"])
+    qt["no"] = qt.groupby("theme").cumcount() + 1
+    save("drop_quotes", qt, ["mart_action_drop.json（word1〜word5・open_range）"])
+
+    # アンケート分析用 xlsx（設問マスター＝選択肢の名前、カンマ区切り＝特典応募時の回答）
+    def read_survey(path):
+        if not path or not os.path.exists(path):
+            return None, None
+        master = pd.read_excel(path, sheet_name="設問マスター", dtype=str)
+        ans = pd.read_excel(path, sheet_name="カンマ区切り", header=1, dtype=str)
+        ans = ans[ans["結合Account_ID"].fillna("").str.len() > 20]
+        return master, ans
+    SV_MASTER, SV_ANS = read_survey(survey_xlsx)
+
+    # 登録時アンケート（映画祭：Q1＝住まい、Q2＝勤め先。選択肢の名前は設問マスターから）
     sv = load("stg_user_persona_note_expanded")
     sv = sv[sv["account_id"].isin(reg["account_id"])]
+    REG_Q = {"Q1": ("5", "住まい"), "Q2": ("6", "勤め先")}
     sq = []
     for q in ["questionnaire_q1", "questionnaire_q2"]:
+        Q = q.replace("questionnaire_", "").upper()
+        no, qname = REG_Q[Q]
+        names = {}
+        if SV_MASTER is not None:
+            m = SV_MASTER[(SV_MASTER["アンケート種別"] == "会員登録時") & (SV_MASTER["設問番号"] == no)]
+            names = {int(k): v for k, v in zip(m["選択肢番号"], m["選択肢"])}
         vals = pd.to_numeric(sv[q], errors="coerce").dropna().astype(int)
-        for code in range(1, int(vals.max()) + 1):
-            sq.append({"question": q.replace("questionnaire_", "").upper(), "code": code, "label": f"{code}番",
+        for code in range(1, max([int(vals.max())] + list(names)) + 1):
+            sq.append({"question": Q, "question_label": qname, "code": code, "label": names.get(code, f"{code}番"),
                        "n": int((vals == code).sum())})
-    save("survey_codes", pd.DataFrame(sq), ["stg_user_persona_note_expanded.json"])
+    save("survey_codes", pd.DataFrame(sq), ["stg_user_persona_note_expanded.json", "アンケート分析用 xlsx（設問マスター）"])
+
+    # 特典応募時アンケート（運営メンバーを除く）
+    APP_Q = [  # (キー, 設問文に含まれる言葉, 表示名, 選択肢の並び, 言いたい選択肢)
+        ("revisit", "再訪意欲", "品川エリアへの再訪意欲が高まったか",
+         ["とても高まった", "やや高まった", "どちらでもない", "あまり高まらなかった", "全く高まらなかった"], ["とても高まった", "やや高まった"]),
+        ("effect", "効果", "参加して得られた効果",
+         ["街やセントラルガーデンの魅力を発見できた", "同僚・友人・家族と楽しむことができた", "新しいサービスを利用できた・試すことができた", "その他"], ["街やセントラルガーデンの魅力を発見できた"]),
+        ("satisfaction", "体験満足度", "映画祭の体験満足度が高まったか",
+         ["高まった", "やや高まった", "どちらでもない"], ["高まった", "やや高まった"]),   # 設問マスターにない設問。答えのあった選択肢だけ
+        ("media", "情報媒体", "投稿コンテストを知った媒体",
+         ["社内告知", "フライヤー", "会場ポスター", "LINE公式アカウント（みんまちPJ公式）", "品川国際映画祭WEBサイト", "みんまちDROPからの案内メール", "CinemaCaravan SNS", "その他（紹介・口コミなど）"], []),
+        ("with", "どなたと", "一緒に利用した人",
+         ["一人で", "同僚と一緒に", "友人・恋人と一緒に", "家族と一緒に", "その他"], []),
+        ("nps", "おすすめ", "親しい人へのおすすめ度（0〜10）", [str(i) for i in range(11)], ["9", "10"]),
+    ]
+    app_rows, app_kpi = [], {}
+    if SV_ANS is not None:
+        a = SV_ANS[SV_ANS["特典応募アンケート有無"] == "有り"].copy()
+        op_ids = set(ua.loc[is_true(ua["is_operation_member"]), "account_id"])
+        app_kpi["app_n_all"] = int(len(a))
+        app_kpi["app_operation"] = int(a["結合Account_ID"].isin(op_ids).sum())
+        a = a[~a["結合Account_ID"].isin(op_ids)]
+        n = len(a)
+        col = lambda word: next(c for c in a.columns if word in str(c))
+        for key, word, qlabel, opts, hi in APP_Q:
+            v = a[col(word)].fillna("").astype(str).str.strip()
+            v = v.str.replace(r"\.0$", "", regex=True)
+            if key == "media":
+                v = v.where(v.isin(opts[:-1]) | (v == ""), "その他（紹介・口コミなど）")
+            opts = opts + sorted(set(v[(v != "") & ~v.isin(opts)]))   # 並びにない答えは後ろに足す
+            for order, o in enumerate(opts):
+                k = int((v == o).sum())
+                app_rows.append({"q": key, "q_label": qlabel, "option": o, "order": order, "n": k,
+                                 "pct": round(k / n * 100, 1) if n else 0, "hi": o in hi})
+            app_kpi[f"app_{key}_hi"] = int(v.isin(hi).sum()) if hi else None
+            app_kpi[f"app_{key}_hi_pct"] = round(float(v.isin(hi).mean()) * 100, 1) if hi and n else None
+        nps = pd.to_numeric(a[col("おすすめ")], errors="coerce")
+        app_kpi.update({
+            "app_n": int(n),
+            "app_revisit_very": int((a[col("再訪意欲")] == "とても高まった").sum()),
+            "app_nps_mean": round(float(nps.mean()), 1),
+            "app_nps_score": round(float(((nps >= 9).mean() - (nps <= 6).mean()) * 100), 0),
+            "app_posted": int(a["結合Account_ID"].isin(gen["account_id"]).sum()),
+            "app_reg_cinema": int(a["結合Account_ID"].isin(reg["account_id"]).sum()),
+            "app_comments": int(a[col("ご意見")].fillna("").str.strip().ne("").sum()),
+        })
+        # 「いつもの品川が違って見えた」を書いた人の回答
+        ev_ids = set(gen.loc[gen["themes"].map(lambda x: "everyday" in x), "account_id"])
+        e = a[a["結合Account_ID"].isin(ev_ids)]
+        app_kpi["app_everyday_n"] = int(len(e))
+        app_kpi["app_everyday_up"] = int(e[col("再訪意欲")].isin(["とても高まった", "やや高まった"]).sum())
+    save("app_survey", pd.DataFrame(app_rows, columns=["q", "q_label", "option", "order", "n", "pct", "hi"]),
+         ["アンケート分析用 xlsx（特典応募時。運営メンバーを除く）", "mart_user_allevent.json（is_operation_member）"])
+
+    # 体験の流れ（同じ人を追える DROP の会員データ。GA は人を追えないので入れない）
+    #   知った媒体（特典応募時アンケート）→ 登録の経路 → 投稿 → 品川エリアへの再訪意欲（特典応募時アンケート）
+    #   対象：映画祭をきっかけに登録した人・一般の投稿をした人・特典応募時アンケートに答えた人（運営メンバーを除く）
+    J_SHORT = {"LINE公式アカウント（みんまちPJ公式）": "LINE公式アカウント", "品川国際映画祭WEBサイト": "映画祭WEBサイト",
+               "みんまちDROPからの案内メール": "DROPの案内メール", "その他（紹介・口コミなど）": "紹介・口コミなど"}
+    J_ORIGIN = {"映画祭をきっかけに新規登録": "映画祭で新規登録", "期間中に別の入口から新規登録": "期間中に別の入口から新規登録", "以前からの会員": "以前からの会員"}
+    media_of, feel_of = {}, {}
+    if SV_ANS is not None:
+        mv = a[col("情報媒体")].fillna("").astype(str).str.strip()
+        known = [o for o in APP_Q[3][3][:-1]]
+        mv = mv.where(mv.isin(known) | (mv == ""), "その他（紹介・口コミなど）")
+        media_of = dict(zip(a["結合Account_ID"], mv.map(lambda x: J_SHORT.get(x, x) if x else "答えなし")))
+        feel_of = dict(zip(a["結合Account_ID"], a[col("再訪意欲")].fillna("答えなし")))
+    uai = ua.drop_duplicates("account_id").set_index("account_id")
+    reg_ids, gen_ids = set(reg["account_id"]), set(gen["account_id"])
+    ev_ids = set(gen.loc[gen["themes"].map(lambda x: "everyday" in x), "account_id"])
+    jr = []
+    for acc in sorted(reg_ids | gen_ids | set(media_of)):
+        org = "映画祭をきっかけに新規登録" if acc in reg_ids else (origin(uai.loc[acc]) if acc in uai.index else "以前からの会員")
+        post = ("「いつもの品川」を書いた" if acc in ev_ids else "ほかのテーマを書いた") if acc in gen_ids else "投稿していない"
+        jr.append({"media": media_of.get(acc, "わからない（応募なし）"), "origin": J_ORIGIN[org], "post": post,
+                   "feel": feel_of.get(acc, "応募していない")})
+    jrd = pd.DataFrame(jr)
+    _mc = jrd["media"].value_counts()
+    _solo = [m for m, n in _mc.items() if n == 1 and m not in ("答えなし", "わからない（応募なし）")]
+    if len(_solo) >= 2:   # 1人だけの媒体が2つ以上あれば「そのほかの媒体」にまとめる（組み合わせで個人がわかりにくいように）
+        jrd.loc[jrd["media"].isin(_solo), "media"] = "そのほかの媒体"
+    app_kpi["journey_media_merged"] = "・".join(_solo) if len(_solo) >= 2 else ""
+    jp = jrd.groupby(["media", "origin", "post", "feel"]).size().rename("people").reset_index()
+    save("journey_paths", jp, ["mart_user.json", "mart_user_allevent.json", "mart_action_drop.json（sentence）", "アンケート分析用 xlsx（特典応募時。運営メンバーを除く）"])
+    app_kpi["journey_people"] = int(len(jr))
+
+    # 投稿から読み取った体験の流れ（4層）。一般の投稿を、ノード定義（①コンテンツ・②最初の関心・③行動・④愛着の関心・意向）に
+    # 沿って1件ずつ読み取った結果は raw/post_layers.json（コードの外。GitHub には上げない）に書く。各層は、その投稿でいちばん中心に書かれたもの1つ
+    LAYERS = dict(post_layers or {})
+    LY_NONE = "読み取れない"
+    if LAYERS.get("posts"):
+        lc = pd.DataFrame(LAYERS["posts"]).merge(gen[["artwork_id", "account_id"]], on="artwork_id", how="inner")
+        missing = int((~gen["artwork_id"].isin(lc["artwork_id"])).sum())
+        if missing:
+            print(f"注意：4層の読み取りがない一般の投稿が {missing}件あります（post_layers.json に追加してください）")
+        lc["feeling"] = lc["feeling"].fillna("")
+        lc["attach_type"] = lc["attach"].map(LAYERS.get("attach_type", {})).fillna("")
+        order = {k: {v: i for i, v in enumerate(vs)} for k, vs in LAYERS.get("layers", {}).items()}
+        pl = lc.groupby(["content", "interest", "action", "feeling", "attach", "attach_type"]).agg(
+            posts=("artwork_id", "size"), people=("account_id", "nunique")).reset_index()
+        for k in ["content", "interest", "action", "attach"]:
+            pl[k + "_order"] = pl[k].map(order.get(k, {})).fillna(99).astype(int)
+        fo = {v: i for i, v in enumerate(LAYERS.get("feelings", []))}
+        pl["feeling_order"] = pl["feeling"].map(fo).fillna(99).astype(int)
+        save("post_layers", pl, ["mart_action_drop.json（sentence。一般の投稿）", "post_layers.json（4層の読み取り）"])
+        has = lc["attach"] != LY_NONE
+        mv = lc["content"] == "映画の上映"
+        app_kpi.update({
+            "ly_posts": int(len(lc)),
+            "ly_people": int(lc["account_id"].nunique()),
+            "ly_attach_posts": int(has.sum()),
+            "ly_attach_pct": round(float(has.mean()) * 100, 1),
+            "ly_attach_people": int(lc.loc[has, "account_id"].nunique()),
+            "ly_view_posts": int(lc["attach_type"].eq("見方・気持ち").sum()),
+            "ly_revisit_posts": int(lc["attach_type"].eq("再訪・滞在").sum()),
+            "ly_engage_posts": int(lc["attach_type"].eq("関わり・発信").sum()),
+            "ly_movie_posts": int(mv.sum()),
+            "ly_movie_attach": int((mv & has).sum()),
+        })
+        # 4 の読み取りの例。公開範囲が全体（open_range=1）の一般の投稿の行だけ。アカウント名・日時は出さない
+        ex = []
+        for e in LAYERS.get("examples", []):
+            r = gen[(gen["artwork_id"] == e["artwork_id"]) & (gen["open_range"].astype(str) == "1")]
+            if r.empty or not lc["artwork_id"].eq(e["artwork_id"]).any():
+                continue
+            r = r.iloc[0]
+            lines = [str(r[f"word{i}"]).strip() for i in e["lines"] if pd.notna(r[f"word{i}"]) and str(r[f"word{i}"]).strip()]
+            if lines:
+                ex.append({"attach": e["attach"], "attach_type": LAYERS.get("attach_type", {}).get(e["attach"], ""),
+                           "attach_order": order.get("attach", {}).get(e["attach"], 99), "text": "\n".join(lines)})
+        ex = pd.DataFrame(ex, columns=["attach", "attach_type", "attach_order", "text"])
+        ex["no"] = ex.groupby("attach").cumcount() + 1
+        save("layer_examples", ex, ["mart_action_drop.json（word1〜word5・open_range）", "post_layers.json（読み取りの例に使う投稿と行）"])
+        # 投稿の読み取り（4 があるか）× 特典応募時アンケートの再訪意欲。投稿した人ごと
+        pp = lc.groupby("account_id")["attach"].apply(lambda s: bool((s != LY_NONE).any())).rename("has").reset_index()
+        pp["post_attach"] = pp["has"].map({True: "愛着が読み取れた", False: "読み取れなかった"})
+        pp["survey"] = pp["account_id"].map(feel_of).fillna("応募していない")
+        S_ORDER = ["とても高まった", "やや高まった", "どちらでもない", "あまり高まらなかった", "全く高まらなかった", "答えなし", "応募していない"]
+        ac = pp.groupby(["post_attach", "survey"]).size().rename("people").reset_index()
+        ac["row_order"] = ac["post_attach"].map({"愛着が読み取れた": 0, "読み取れなかった": 1})
+        ac["survey_order"] = ac["survey"].map({v: i for i, v in enumerate(S_ORDER)}).fillna(99).astype(int)
+        save("attach_cross", ac.sort_values(["row_order", "survey_order"]), ["mart_action_drop.json（一般の投稿）", "post_layers.json（4層の読み取り）", "アンケート分析用 xlsx（特典応募時。運営メンバーを除く）"])
+        up = pp["survey"].isin(["とても高まった", "やや高まった"])
+        app_kpi.update({
+            "ly_attach_applied": int((pp["has"] & (pp["survey"] != "応募していない")).sum()),
+            "ly_attach_up": int((pp["has"] & up).sum()),
+            "ly_noattach_people": int((~pp["has"]).sum()),
+            "ly_noattach_applied": int((~pp["has"] & (pp["survey"] != "応募していない")).sum()),
+            "ly_noattach_up": int((~pp["has"] & up).sum()),
+        })
 
     # KPI（1行）
     cin = ga["is_cinema"]
@@ -450,6 +671,9 @@ def build(SRC, extra_sites=None):
         "posts_general": int(len(gen)),
         "posts_operation": int(drop["is_op"].sum()),
         "posters_general": int(gen["account_id"].nunique()),
+        "posts_per_poster": round(len(gen) / max(1, gen["account_id"].nunique()), 1),
+        "posts_max_person": int(gen.groupby("account_id").size().max()),
+        "posts_with_photo_pct": round(float(gen["image_file_path"].notna().mean()) * 100, 1),
         "posts_no_spot_general": int(gen["event_id"].isna().sum()),
         "posts_evening_general": int(gen["hour"].between(17, 22).sum()),
         "posts_evening_pct": round(float(gen["hour"].between(17, 22).mean()) * 100, 1),
@@ -470,6 +694,7 @@ def build(SRC, extra_sites=None):
         "posts_no_spot_pct": round(float(gen["event_id"].isna().mean()) * 100, 1),
         "spots": int(len(em)),
     }
+    kpi.update({k: v for k, v in app_kpi.items()})
     save("kpi", pd.DataFrame([kpi]), ["mart_ga.json", "mart_action_drop.json", "mart_user.json",
                                       "mart_user_allevent.json", "mart_inspiration.json", "stg_user_persona_note_expanded.json"])
     return RESULTS, INPUTS
